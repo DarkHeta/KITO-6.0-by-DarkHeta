@@ -21,3 +21,10 @@ http://go.microsoft.com/fwlink/?LinkId=517284
 6. Compile the entire solution in toolbar: Build -> Build Solution)
 7. Once the entire solution has been compiled then nagivate to the build folder and find client and server
 8. Modify the game with your media
+
+### DarkHeta's changes
+1. Added Russian language support
+2. Added Day/Night cycle
+3. Changed star system
+4. Changed Unit's behaviour
+More up coming!
