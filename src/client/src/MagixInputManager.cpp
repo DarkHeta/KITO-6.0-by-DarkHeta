@@ -6,12 +6,12 @@ MagixInputManager::MagixInputManager()
 {
 	mInputBoxText = 0;
 	inputMode = INPUT_CONTROL;
-	inputText = "";
+	inputText = L"";
 	heldKey = OIS::KC_RETURN;
 	heldKeyText = 0;
 	heldDelay = 0;
 	inputCursorPos = 0;
-	defaultCaption = "";
+	defaultCaption = L"";
 	clearAtReturn = false;
 	allowTempStorage = false;
 	allowNewLine = false;
@@ -19,7 +19,7 @@ MagixInputManager::MagixInputManager()
 	charLimit = 0;
 	for (int i = 0; i<MAX_TEMPSTORAGE; i++)
 	{
-		tempStorage[i] = "";
+		tempStorage[i] = L"";
 	}
 	tempStoragePos = -1;
 	heldHotkey = 0;
@@ -73,11 +73,11 @@ unsigned short MagixInputManager::getInputMode()
 {
 	return inputMode;
 }
-void MagixInputManager::setString(const String &caption)
+void MagixInputManager::setString(const UTFString &caption)
 {
 	inputText = caption;
 	if (inputText.length() > charLimit)inputText.erase(charLimit, charLimit - inputText.length());
-	inputText += "|";
+	inputText = L"" + inputText +"|";
 	inputCursorPos = int(inputText.length() - 1);
 	setInputText(inputText, true);
 }
@@ -85,7 +85,7 @@ void MagixInputManager::pushChar(const unsigned int &a)
 {
 	if ((inputText.length() - 1) >= charLimit)return;
 	tempStoragePos = -1;
-	String temp = "";
+	UTFString temp = L"";
 	temp.push_back(a);
 	inputText.insert(inputCursorPos, temp);
 	inputCursorPos += 1;
@@ -119,19 +119,20 @@ void MagixInputManager::setInputCursorPos(const unsigned short &pos)
 		setInputText(inputText, true);
 	}
 }
-void MagixInputManager::setInputText(const String &text, bool enable)
+void MagixInputManager::setInputText(const UTFString &text, bool enable)
 {
-	String caption = defaultCaption;
+	UTFString caption = defaultCaption;
 	if (enable && mInputBoxText)
 	{
 		//Normal text
 		if (!hideText)
 		{
-			caption += text;
+			caption = caption + text;
 			normalizeText(caption, mInputBoxText);
 
 			//limit visible lines
 			const Real tHeight = StringConverter::parseReal(mInputBoxText->getParameter("char_height"));
+			int y = 0;
 			if (tHeight>0)
 			{
 				vector<String>::type tLine;
@@ -161,11 +162,26 @@ void MagixInputManager::setInputText(const String &text, bool enable)
 						tLength -= int(tLine[cursorLine].length());
 					}
 					if (cursorLine<(maxInputLines - 1))cursorLine = maxInputLines - 1;
+					UTFString *n = new UTFString[tLine.size()];
+					UTFString tCaption2;
+					int g = 0;
+					for (int i = 0; i < (int)caption.length(); i++)
+					{
+						if (caption[i] == '\n')
+						{
+							n[g] = tCaption2;
+							g++;
+							tCaption2 = "";
+						}
+						else tCaption2 = tCaption2 + caption[i];
+					}
+					if (tCaption2 != "")n[g] = tCaption2;
 
 					caption = "";
+					int j = 0;
 					for (int i = maxInputLines - 1; i >= 0; i--)
 					{
-						caption += tLine[cursorLine - i] + (i == 0 ? "" : "\n");
+						caption = caption + n[cursorLine - i] + (i == 0 ? "" : "\n");
 					}
 				}
 			}
@@ -174,12 +190,12 @@ void MagixInputManager::setInputText(const String &text, bool enable)
 		else
 		{
 			for (int i = 0; i<(int)text.length(); i++)
-				caption += (i == inputCursorPos ? "|" : "*");
+				caption = caption + (i == inputCursorPos ? "|" : "*");
 		}
 	}
-	if (mInputBoxText)mInputBoxText->setCaption(enable ? (Ogre::UTFString)atow(caption) : "");
+	if (mInputBoxText)mInputBoxText->setCaption(enable ? caption : "");
 }
-void MagixInputManager::normalizeText(String &caption, OverlayElement *box)
+void MagixInputManager::normalizeText(UTFString &caption, OverlayElement *box)
 {
 	if (!box)return;
 	//size caption
@@ -233,7 +249,7 @@ void MagixInputManager::normalizeText(String &caption, OverlayElement *box)
 		}
 	}
 }
-const String MagixInputManager::getInputText()
+const UTFString MagixInputManager::getInputText()
 {
 	return inputText;
 }
@@ -339,13 +355,13 @@ void MagixInputManager::inputHeldKey()
 		break;
 	}
 }
-void MagixInputManager::setInputBox(OverlayElement *inputBox, const String &caption, unsigned short limit, bool clear, const String &startText, bool bTempStorage, bool bNewLine, bool bHideText)
+void MagixInputManager::setInputBox(OverlayElement *inputBox, const UTFString &caption, unsigned short limit, bool clear, const UTFString &startText, bool bTempStorage, bool bNewLine, bool bHideText)
 {
 	mInputBoxText = inputBox;
-	defaultCaption = caption;
+	defaultCaption = L"" +caption;
 	charLimit = limit;
 	clearAtReturn = clear;
-	inputText = startText;
+	inputText = L"" + startText;
 	allowTempStorage = bTempStorage;
 	allowNewLine = bNewLine;
 	hideText = bHideText;
@@ -358,7 +374,7 @@ void MagixInputManager::setClearAtReturn(bool clear)
 {
 	clearAtReturn = clear;
 }
-void MagixInputManager::pushTempStorage(const String &input)
+void MagixInputManager::pushTempStorage(const UTFString &input)
 {
 	//Don't repeat previous storage
 	if (tempStorage[0] == input)return;
@@ -369,7 +385,7 @@ void MagixInputManager::pushTempStorage(const String &input)
 	}
 	tempStorage[0] = input;
 }
-const String MagixInputManager::getTempStorage(bool increment, bool decrement)
+const UTFString MagixInputManager::getTempStorage(bool increment, bool decrement)
 {
 	if (increment && tempStoragePos<MAX_TEMPSTORAGE - 1)tempStoragePos += 1;
 	else if (decrement && tempStoragePos>0)tempStoragePos -= 1;

@@ -23,6 +23,7 @@ struct WeatherEvent
 	Real rate;
 	vector<String>::type effect;
 	Real effectFrequency;
+	Real FogAdder;
 	bool isConstant;
 	WeatherEvent()
 	{
@@ -35,6 +36,7 @@ struct WeatherEvent
 		effect.clear();
 		effectFrequency = 0;
 		isConstant = false;
+		FogAdder = 1;
 	}
 };
 struct AttackFX
@@ -207,7 +209,7 @@ public:
 	vector<bool>::type itemParticleOnNode;
 	vector<const Attack>::type attackList;
 	vector<const Critter>::type critterList;
-
+	UTFString UpdateLog;
 	MagixExternalDefinitions()
 	{
 		lastBioName = "";
@@ -230,6 +232,7 @@ public:
 		maxTailMarks = 0;
 		maxEmotes = 0;
 		maxItems = 0;
+		UpdateLog = "";
 	}
 	~MagixExternalDefinitions()
 	{
@@ -305,7 +308,7 @@ public:
 
 	const String loadBio(const String &name = "");
 
-	const String loadUpdateCaption();
+	void loadUpdateCaption();
 
 	void loadItems(const String &filename, const bool decrypt);
 

@@ -77,27 +77,27 @@ public:
 	}
 	void reset(bool clearHistory = false);
 
-	void push(const String &caption, const String &sayer = "", const unsigned char &type = CHAT_GENERAL);
+	void push(const UTFString &caption, const String &sayer = "", const unsigned char &type = CHAT_GENERAL);
 
 	const String getChatBlock(const unsigned short &lines, const Real &boxWidth, const Real &charHeight, const Real &lastOffset);
 
-	void processInput(String &caption, unsigned char &type, String &param);
+	void processInput(UTFString &caption, unsigned char &type, UTFString &param);
 
-	void say(MagixUnitManager *unitMgr, MagixUnit *target, const String &caption, const unsigned char &type = CHAT_GENERAL);
+	void say(MagixUnitManager *unitMgr, MagixUnit *target, const UTFString &caption, const unsigned char &type = CHAT_GENERAL);
 
-	void message(const String &caption, const unsigned char &type = 0);
+	void message(const UTFString &caption, const unsigned char &type = 0);
 
 	bool popHasNewLine(const unsigned char &chan);
 
 	bool getHasNewLine(const unsigned char &chan);
 
-	const String prefixChatLine(const String &caption, const String &sayer, const unsigned char &type, bool isPostfixLength = false);
+	const UTFString prefixChatLine(const UTFString &caption, const String &sayer, const unsigned char &type, bool isPostfixLength = false);
 
 	const unsigned short getPrefixLength(const String &sayer, const unsigned char &type);
 
 	const unsigned short getPostfixLength(const String &sayer, const unsigned char &type);
 
-	const String processChatString(const String &caption, const String &sayer, const unsigned char &type, const Real &boxWidth, const Real &charHeight);
+	const UTFString processChatString(const UTFString &caption, const String &sayer, const unsigned char &type, const Real &boxWidth, const Real &charHeight);
 
 	void toggleChannel();
 

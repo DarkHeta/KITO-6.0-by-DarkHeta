@@ -156,7 +156,7 @@ public:
 	const unsigned short getUnitID();
 	void createNameTag(const String &name, MovableTextOverlayAttributes *attrs);
 	void createUserTag(const String &name, MovableTextOverlayAttributes *attrs);
-	void createChatBubble(String caption, MovableTextOverlayAttributes *attrs, const Real &tLeft = 0.0, const Real &tTop = 0.0);
+	void createChatBubble(UTFString caption, MovableTextOverlayAttributes *attrs, const Real &tLeft = 0.0, const Real &tTop = 0.0);
 	MovableTextOverlay* getNameTag();
 	MovableTextOverlay* getUserTag();
 	MovableTextOverlay* getChatBubble();

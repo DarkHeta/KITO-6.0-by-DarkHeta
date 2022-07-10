@@ -16,14 +16,13 @@ MagixSkyManager::MagixSkyManager()
 	mSun = 0;
 	mSunRadiance = 0;
 	mMoon = 0;
-	mStars = 0;
 	mSunLight = 0;
 	mMoonLight = 0;
 	//for(int i=0;i<MAX_CLOUDS;i++)cloudSpeed[i] = 0;
 	skyDayTime = 500;
 	dayTimeFrozen = false;
 	frozenDayTime = 0;
-
+	Time=0;
 	mWeatherNode = 0;
 	mWeatherSystem = 0;
 	weatherTime = 0;
@@ -36,9 +35,9 @@ MagixSkyManager::MagixSkyManager()
 	weatherEffectCountdown = 0;
 	weatherCycleEventList.clear();
 	hasWeatherSound = false;
-
+	
 	interiorSky = false;
-
+	FogDistance = 1;
 	FOG_START = 1000;
 	FOG_END = 2500;
 }
@@ -62,19 +61,10 @@ void MagixSkyManager::initialize(SceneManager *sceneMgr, MagixExternalDefinition
 	cloudDome->setMaterialName("Sky/CloudDome");
 	cloudDome->setQueryFlags(SKY_MASK);
 
-	/*mCloudSet = mSceneMgr->createBillboardSet("Clouds");
-	for(int i=0;i<MAX_CLOUDS;i++)
-	{
-	Real tYZ = Math::RangeRandom(0,100);
-	Billboard *cloud = mCloudSet->createBillboard(Vector3(Math::RangeRandom(-500,500),100-tYZ,tYZ*(Math::RangeRandom(0,10)>5?1:-1) ));
-	cloudSpeed[i] = Math::RangeRandom(10,50);
-	}
-	mCloudSet->setCastShadows(false);
-	mCloudSet->setDefaultDimensions(20,8);
-	mCloudSet->setBillboardType(BBT_ORIENTED_COMMON);
-	mCloudSet->setCommonDirection(Vector3::UNIT_Y);
-	mCloudSet->setMaterialName("cloudMat");
-	mCloudSet->setVisible(true);*/
+	Entity *StarsDome = mSceneMgr->createEntity("StarsDome", "Semidome.mesh");
+	StarsDome->setCastShadows(false);
+	StarsDome->setMaterialName("Sky/StarDome");
+	StarsDome->setQueryFlags(SKY_MASK);
 
 	mSun = mSceneMgr->createBillboardSet("Sun", 1);
 	mSun->setCastShadows(false);
@@ -96,12 +86,6 @@ void MagixSkyManager::initialize(SceneManager *sceneMgr, MagixExternalDefinition
 	mMoon->createBillboard(Vector3(100, 100, 0), ColourValue(1, 1, 1, 0.90));
 	mMoon->setQueryFlags(SKY_MASK);
 
-	mStars = mSceneMgr->createBillboardSet("Stars", MAX_STARS);
-	mStars->setCastShadows(false);
-	mStars->setDefaultDimensions(1, 1);
-	mStars->setMaterialName("Sky/StarMat");
-	mStars->setQueryFlags(SKY_MASK);
-	for (int i = 0; i<MAX_STARS; i++)mStars->createBillboard(Vector3(Math::RangeRandom(-200, 200), Math::RangeRandom(50, 100), Math::RangeRandom(-200, 200)));
 
 	mSkyNode = mSceneMgr->getRootSceneNode()->createChildSceneNode();
 	mSkyNode->attachObject(mSkyDome);
@@ -109,7 +93,7 @@ void MagixSkyManager::initialize(SceneManager *sceneMgr, MagixExternalDefinition
 	mSkyNode->attachObject(mSun);
 	mSkyNode->attachObject(mSunRadiance);
 	mSkyNode->attachObject(mMoon);
-	mSkyNode->attachObject(mStars);
+	mSkyNode->attachObject(StarsDome);
 	//mSkyNode->attachObject(mCloudSet);
 	mSkyNode->setScale(150, 150, 150);
 
@@ -140,18 +124,7 @@ void MagixSkyManager::initialize(SceneManager *sceneMgr, MagixExternalDefinition
 	showSky(false);
 	//mTerrainGlobals = OGRE_NEW TerrainGlobalOptions();
 }
-/*void updateClouds(const FrameEvent &evt)
-{
-for(int i=0;i<MAX_CLOUDS;i++)
-{
-mCloudSet->getBillboard(i)->setPosition(mCloudSet->getBillboard(i)->getPosition()+Vector3(cloudSpeed[i],0,0)*evt.timeSinceLastFrame);
-if(mCloudSet->getBillboard(i)->getPosition().x > 100)
-{
-Real tYZ = Math::RangeRandom(0,500);
-mCloudSet->getBillboard(i)->setPosition(Vector3(-500,100-tYZ,tYZ*(Math::RangeRandom(0,10)>5?1:-1) ));
-}
-}
-}*/
+
 void MagixSkyManager::updateSky()
 {
 	if (mSceneMgr->getCamera("PlayerCam")->isAttached())
@@ -182,6 +155,229 @@ void MagixSkyManager::resetSky()
 	if (interiorSky)setInteriorSky(true, tFogColour);
 }
 void MagixSkyManager::updateCelestials(const Real &dayTime)
+{
+	if (interiorSky)return;
+	
+
+	FOG_END = mDef->viewDistance * 2000 * FogDistance + 300;
+	FOG_START = mDef->viewDistance * 700 * FogDistance + 100;
+
+	Vector3 sunDirection;
+	sunDirection.z = 0;
+	sunDirection.x = (Real)(150 * sin(dayTime*3.1415 / 1200));
+	sunDirection.y = (Real)(150 * cos(dayTime*3.1415 / 1200));
+
+	mSun->getBillboard(0)->setPosition(-sunDirection);
+	mSunRadiance->getBillboard(0)->setPosition(-sunDirection);
+	mSunLight->setDirection(sunDirection);
+	mMoon->getBillboard(0)->setPosition(sunDirection);
+	mMoonLight->setDirection(-sunDirection);
+
+	ColourValue skyColour = ColourValue(0, 0, 0, 0);// *weatherSkyShader;
+	ColourValue fadeColour = ColourValue(0, 0, 0, 0);//DEFAULT_FOG_COLOUR * weatherSkyShader;
+	ColourValue sunLightColour = ColourValue(0, 0, 0, 0);//DEFAULT_SUNLIGHT_COLOUR;
+	ColourValue moonLightColour = ColourValue(0, 0, 0, 0);//DEFAULT_MOONLIGHT_COLOUR;
+	ColourValue cloudColour = ColourValue(0, 0, 0, 0);//ColourValue(1, 1, 1, 1);
+	ColourValue sunRadianceColour = ColourValue(0, 0, 0, 0);//ColourValue(0, 0, 0, 1);
+	ColourValue sunColour = ColourValue(0, 0, 0, 0);//ColourValue(1, 1, 1, 1);
+	ColourValue moonColour = ColourValue(0, 0, 0, 0);//ColourValue(1, 1, 1, 1);
+	ColourValue ambientColour = ColourValue(0, 0, 0, 0);
+	ColourValue StarsColour = ColourValue(0, 0, 0, 0);
+
+	//Night
+	if (dayTime >= 1900 || dayTime<500)
+	{
+		if (mSun->isVisible())mSun->setVisible(false);
+		if (mSunRadiance->isVisible())mSunRadiance->setVisible(false);
+		if (!mMoon->isVisible())mMoon->setVisible(true);
+		if (mSunLight->isVisible())mSunLight->setVisible(false);
+		if (!mMoonLight->isVisible())mMoonLight->setVisible(true);
+		if (!mMoonLight->getCastShadows())mMoonLight->setCastShadows(true);
+		StarsColour = ColourValue(1, 1, 1, 1);
+		fadeColour = DEFAULT_FOG_COLOUR * ColourValue(0.4, 0.4, 0.5, 1) * weatherSkyShader;
+		cloudColour = ColourValue(0.1, 0.1, 0.1) * weatherSkyShader;
+		moonColour = ColourValue(1, 1, 1, 0.9);
+		moonLightColour = DEFAULT_MOONLIGHT_COLOUR* weatherSkyShader;
+		skyColour = ColourValue(0.4, 0.4, 0.5, 1) *weatherSkyShader;
+		ambientColour = ColourValue(AMBIENT_LIGHT_OUTDOOR);
+	}
+	else
+		//dawn
+		if (dayTime >= 500 && dayTime<600)
+		{
+			if (!mSun->isVisible())mSun->setVisible(true);
+			if (!mSunRadiance->isVisible())mSunRadiance->setVisible(true);
+			if (!mMoon->isVisible())mMoon->setVisible(true);
+			if (!mSunLight->isVisible())mSunLight->setVisible(true);
+			if (!mMoonLight->isVisible())mMoonLight->setVisible(true);
+			if (mMoonLight->getCastShadows())mMoonLight->setCastShadows(false);
+
+			const Real tBlink = (Real)((600 - dayTime)*1.0 / 100);
+			StarsColour = ColourValue(tBlink, tBlink, tBlink, tBlink);
+
+			const Real tFade = (Real)((dayTime - 500)*1.0 / 100);
+
+			sunColour = ColourValue(tFade, tFade*0.8, 1.5 * tFade - 1, tFade*0.95);
+			moonColour = ColourValue(1 - tFade, 1 - tFade, 1 - tFade, (1 - tFade)*0.9);
+			sunRadianceColour = ColourValue(tFade, tFade*0.8, 0, 1);
+
+			sunLightColour = DEFAULT_SUNLIGHT_COLOUR * ColourValue(tFade, 0.5 * tFade, 0, 1)* weatherSkyShader;
+			moonLightColour = DEFAULT_MOONLIGHT_COLOUR* (1 - tFade)* weatherSkyShader;
+
+			skyColour = ColourValue((0.4 + tFade*0.6), (0.4 + tFade*0.6), (0.5 + tFade*0.5), 1);
+			skyColour = skyColour * ColourValue(1, (1 - tFade*0.1), (1 - tFade*0.25), 1);
+			skyColour = skyColour * weatherSkyShader;
+
+			fadeColour = DEFAULT_FOG_COLOUR;
+			fadeColour = fadeColour * ColourValue((float)(0.4 + tFade*0.6), (float)(0.4 + tFade*0.6), (float)(0.5 + tFade*0.5), 1);
+			fadeColour = fadeColour * ColourValue(1, (float)(1 - tFade*0.1), (float)(1 - tFade*0.25), 1);
+			fadeColour = fadeColour * weatherSkyShader;
+
+			cloudColour = ColourValue((float)(0.1 + tFade*0.9), (float)(0.1 + tFade*0.7), 0.1) * weatherSkyShader;
+			ambientColour = ColourValue(AMBIENT_LIGHT_OUTDOOR)*(tFade * 1 + 1);
+
+		}
+		else
+			//post-dawn
+			if (dayTime >= 600 && dayTime < 700)
+			{
+				if (!mSun->isVisible())mSun->setVisible(true);
+				if (!mSunRadiance->isVisible())mSunRadiance->setVisible(true);
+				if (mMoon->isVisible())mMoon->setVisible(false);
+				if (!mSunLight->isVisible())mSunLight->setVisible(true);
+				if (mMoonLight->isVisible())mMoonLight->setVisible(false);
+
+				skyColour = ColourValue(1, 1, 1, 1) *weatherSkyShader;
+				fadeColour = DEFAULT_FOG_COLOUR *weatherSkyShader;
+				sunLightColour = DEFAULT_SUNLIGHT_COLOUR* weatherSkyShader;
+				cloudColour = ColourValue(1, 1, 1, 1);
+				sunRadianceColour = ColourValue(0, 0, 0, 1);
+
+				const Real tFade = (Real)((dayTime - 600)*1.0 / 100);
+				skyColour = skyColour * ColourValue(1, (float)(0.9 + tFade*0.1), (float)(0.75 + tFade*0.25), 1);
+				fadeColour = fadeColour * ColourValue(1, (float)(0.9 + tFade*0.1), (float)(0.75 + tFade*0.25), 1);
+				sunLightColour = sunLightColour * ColourValue(1, (float)(0.5 + tFade*0.5), (float)(-0.25 + tFade*1.25), 1);
+				cloudColour = ColourValue(1, (float)(0.8 + tFade*0.2), (float)(0.1 + tFade*0.9), 1);
+				sunRadianceColour = ColourValue((float)((1 - tFade)*1.0), (float)((1 - tFade)*0.8), 0, 1);
+				sunColour = ColourValue(1, 0.8 + 0.2*tFade, 0.5 + 0.5*tFade, 0.95);
+				ambientColour = ColourValue(AMBIENT_LIGHT_OUTDOOR) * 2;
+			}
+			else
+				//day
+				if (dayTime >= 700 && dayTime<1700)
+				{
+					if (!mSun->isVisible())mSun->setVisible(true);
+					if (!mSunRadiance->isVisible())mSunRadiance->setVisible(true);
+					if (mMoon->isVisible())mMoon->setVisible(false);
+					if (!mSunLight->isVisible())mSunLight->setVisible(true);
+					if (mMoonLight->isVisible())mMoonLight->setVisible(false);
+
+					skyColour = ColourValue(1, 1, 1, 1) *weatherSkyShader;
+					fadeColour = DEFAULT_FOG_COLOUR *weatherSkyShader;
+					sunLightColour = DEFAULT_SUNLIGHT_COLOUR* weatherSkyShader;
+					cloudColour = ColourValue(1, 1, 1, 1);
+					sunRadianceColour = ColourValue(0, 0, 0, 1);
+					sunColour = ColourValue(1, 1, 1, 0.95);
+					ambientColour = ColourValue(AMBIENT_LIGHT_OUTDOOR) * 2;
+				}
+				else
+					//pre-dusk
+					if (dayTime >= 1700 && dayTime < 1800)
+					{
+						if (!mSun->isVisible())mSun->setVisible(true);
+						if (!mSunRadiance->isVisible())mSunRadiance->setVisible(true);
+						if (mMoon->isVisible())mMoon->setVisible(false);
+						if (!mSunLight->isVisible())mSunLight->setVisible(true);
+						if (mMoonLight->isVisible())mMoonLight->setVisible(false);
+
+						skyColour = ColourValue(1, 1, 1, 1) *weatherSkyShader;
+						fadeColour = DEFAULT_FOG_COLOUR *weatherSkyShader;
+						sunLightColour = DEFAULT_SUNLIGHT_COLOUR* weatherSkyShader;
+						cloudColour = ColourValue(1, 1, 1, 1);
+						sunRadianceColour = ColourValue(0, 0, 0, 1);
+
+						const Real tFade = (Real)((1800 - dayTime)*1.0 / 100);
+						skyColour = skyColour * ColourValue(1, (float)(0.8 + tFade*0.2), (float)(0.7 + tFade*0.3), 1);
+						fadeColour = fadeColour * ColourValue(1, (float)(0.8 + tFade*0.2), (float)(0.7 + tFade*0.3), 1);
+						sunLightColour = sunLightColour * ColourValue(1, (float)(0.1 + tFade*0.9), (float)(-0.3 + tFade*1.3), 1);
+						cloudColour = ColourValue(1, (float)(0.75 + tFade*0.25), (float)(0.1 + tFade*0.9), 1);
+						sunRadianceColour = ColourValue((float)((1 - tFade)*1.0), (float)((1 - tFade)*0.7), 0, 1);
+
+						sunColour = ColourValue(1, 0.5 + tFade*0.5, tFade, 0.95);
+						ambientColour = ColourValue(AMBIENT_LIGHT_OUTDOOR) * 2;
+					}
+					else
+						//dusk
+						if (dayTime >= 1800 && dayTime<1900)
+						{
+							if (!mSun->isVisible())mSun->setVisible(true);
+							if (!mSunRadiance->isVisible())mSunRadiance->setVisible(true);
+							if (!mMoon->isVisible())mMoon->setVisible(true);
+							if (!mSunLight->isVisible())mSunLight->setVisible(true);
+							if (!mMoonLight->isVisible())mMoonLight->setVisible(true);
+							if (mMoonLight->getCastShadows())mMoonLight->setCastShadows(false);
+
+							const Real tBlink = (Real)((dayTime - 1800)*1.0 / 100);
+							StarsColour = ColourValue(tBlink, tBlink, tBlink, tBlink);
+
+							const Real tFade = (Real)((1900 - dayTime)*1.0 / 100);
+							sunLightColour = ColourValue(1, 0.1, -0.3, 1)* weatherSkyShader;
+							sunLightColour *= tFade;
+							moonLightColour = DEFAULT_MOONLIGHT_COLOUR* weatherSkyShader;
+							moonLightColour *= 1 - tFade;
+
+							sunColour = ColourValue(tFade, 0.5*tFade, 0, tFade);
+							moonColour = ColourValue(1. - tFade, 1. - tFade, 1. - tFade, (1. - tFade)*0.9);
+
+							skyColour = ColourValue((Real)(0.4 + tFade*0.6), (Real)(0.4 + tFade*0.6), (Real)(0.5 + tFade*0.5), 1);
+							skyColour = skyColour* ColourValue(1, (Real)(1 - tFade*0.2), (Real)(1 - tFade*0.3), 1);
+							skyColour = skyColour*weatherSkyShader;
+
+							sunRadianceColour = ColourValue(tFade, tFade - 0.3, 0, 1);
+
+							fadeColour = DEFAULT_FOG_COLOUR;
+							fadeColour = fadeColour * ColourValue((float)(0.4 + tFade*0.6), (float)(0.4 + tFade*0.6), (float)(0.5 + tFade*0.5), 1);
+							fadeColour = fadeColour * ColourValue(1, (float)(1 - tFade*0.2), (float)(1 - tFade*0.3), 1);
+							fadeColour = fadeColour * weatherSkyShader;
+
+							cloudColour = ColourValue((float)(0.1 + tFade*0.9), (float)(0.1 + tFade*0.65), 0.1);
+							cloudColour = cloudColour * weatherSkyShader;
+
+							ambientColour = ColourValue(AMBIENT_LIGHT_OUTDOOR)*(tFade * 1 + 1);
+						}
+
+
+	mSkyDome->getSubEntity(0)->setCustomParameter(1, Vec4(skyColour));
+	if (mSceneMgr->getFogColour() != fadeColour || mSceneMgr->getFogEnd() != FOG_END)
+	{
+		if (mSkyDome->getSubEntity(0)->getTechnique()->getName() == "2")
+		{
+			mSkyDome->getSubEntity(0)->getTechnique()->getPass(0)->getTextureUnitState(1)->setColourOperationEx(LayerBlendOperationEx::LBX_MODULATE,
+				LayerBlendSource::LBS_MANUAL,
+				LayerBlendSource::LBS_CURRENT,
+				ColourValue(mSkyDome->getSubEntity(0)->getCustomParameter(1).x,
+				mSkyDome->getSubEntity(0)->getCustomParameter(1).y,
+				mSkyDome->getSubEntity(0)->getCustomParameter(1).z));
+		}
+		mSceneMgr->setFog(FOG_LINEAR, fadeColour, FOG_DENSITY, FOG_START, FOG_END);
+	}
+
+	static_cast<MaterialPtr>(MaterialManager::getSingleton().getByName("Sky/StarDome")).get()->setSelfIllumination(StarsColour);
+	static_cast<MaterialPtr>(MaterialManager::getSingleton().getByName("Sky/CloudDome")).get()->setSelfIllumination(cloudColour);
+	static_cast<MaterialPtr>(MaterialManager::getSingleton().getByName("Sky/SunRadiance")).get()->setSelfIllumination(sunRadianceColour);
+
+	mMoon->getBillboard(0)->setColour(moonColour);
+	mSun->getBillboard(0)->setColour(sunColour);
+	mSunRadiance->getBillboard(0)->setColour(sunRadianceColour);
+	mMoonLight->setDiffuseColour(moonLightColour);
+	mMoonLight->setSpecularColour(moonLightColour);
+	mSunLight->setDiffuseColour(sunLightColour);
+	mSunLight->setSpecularColour(sunLightColour);
+
+	mSceneMgr->setAmbientLight(ambientColour);
+}
+
+/*void MagixSkyManager::updateCelestials(const Real &dayTime)
 {
 	if (interiorSky)return;
 	FOG_END = mDef->viewDistance * 2083 + 417;
@@ -242,7 +438,6 @@ void MagixSkyManager::updateCelestials(const Real &dayTime)
 		if (mSceneMgr->getFogColour() != fadeColour || mSceneMgr->getFogEnd() != FOG_END)
 		{
 			mSkyDome->getSubEntity(0)->setCustomParameter(1, Vec4(skyColour));
-			//mSkyDome->getSubEntity(0)->setCustomParameter(2,Vec4(weatherSkyAdder));
 			if (mSkyDome->getSubEntity(0)->getTechnique()->getName() == "2")
 			{
 				mSkyDome->getSubEntity(0)->getTechnique()->getPass(0)->getTextureUnitState(1)->setColourOperationEx(LayerBlendOperationEx::LBX_MODULATE,
@@ -251,26 +446,15 @@ void MagixSkyManager::updateCelestials(const Real &dayTime)
 					ColourValue(mSkyDome->getSubEntity(0)->getCustomParameter(1).x,
 					mSkyDome->getSubEntity(0)->getCustomParameter(1).y,
 					mSkyDome->getSubEntity(0)->getCustomParameter(1).z));
-				/*mSkyDome->getSubEntity(0)->getTechnique()->getPass(0)->getTextureUnitState(2)->setColourOperationEx(LayerBlendOperationEx::LBX_ADD,
-				LayerBlendSource::LBS_MANUAL,
-				LayerBlendSource::LBS_CURRENT,
-				ColourValue(mSkyDome->getSubEntity(0)->getCustomParameter(2).x,
-				mSkyDome->getSubEntity(0)->getCustomParameter(2).y,
-				mSkyDome->getSubEntity(0)->getCustomParameter(2).z));*/
 			}
 			mSceneMgr->setFog(FOG_LINEAR, fadeColour, FOG_DENSITY, FOG_START, FOG_END);
 			mSunLight->setDiffuseColour(sunLightColour);
 			mSunLight->setSpecularColour(sunLightColour);
 			mSun->getBillboard(0)->setColour(ColourValue(1, 1, 1, 0.95));
 			cloudColour = cloudColour * weatherSkyShader;
-			//cloudColour += weatherSkyAdder;
-			//cloudColour.saturate();
 			static_cast<MaterialPtr>(MaterialManager::getSingleton().getByName("Sky/CloudDome")).get()->setSelfIllumination(cloudColour);
 			static_cast<MaterialPtr>(MaterialManager::getSingleton().getByName("Sky/SunRadiance")).get()->setSelfIllumination(sunRadianceColour);
 		}
-		//mTerrainGlobals->setLightMapDirection(mSunLight->getDerivedDirection());
-		//mTerrainGlobals->setCompositeMapAmbient(mSceneMgr->getAmbientLight());
-		//mTerrainGlobals->setCompositeMapDiffuse(mSunLight->getDiffuseColour());
 		return;
 	}
 	//Dusk
@@ -311,7 +495,6 @@ void MagixSkyManager::updateCelestials(const Real &dayTime)
 		skyFade *= Vector4(1, (Real)(1 - tFade*0.2), (Real)(1 - tFade*0.3), 1);
 		skyFade *= Vec4(weatherSkyShader);
 		mSkyDome->getSubEntity(0)->setCustomParameter(1, skyFade);
-		//mSkyDome->getSubEntity(0)->setCustomParameter(2,Vec4(weatherSkyAdder));
 		if (mSkyDome->getSubEntity(0)->getTechnique()->getName() == "2")
 		{
 			mSkyDome->getSubEntity(0)->getTechnique()->getPass(0)->getTextureUnitState(1)->setColourOperationEx(LayerBlendOperationEx::LBX_MODULATE,
@@ -320,12 +503,6 @@ void MagixSkyManager::updateCelestials(const Real &dayTime)
 				ColourValue(skyFade.x,
 				skyFade.y,
 				skyFade.z));
-			/*mSkyDome->getSubEntity(0)->getTechnique()->getPass(0)->getTextureUnitState(2)->setColourOperationEx(LayerBlendOperationEx::LBX_ADD,
-			LayerBlendSource::LBS_MANUAL,
-			LayerBlendSource::LBS_CURRENT,
-			ColourValue(mSkyDome->getSubEntity(0)->getCustomParameter(2).x,
-			mSkyDome->getSubEntity(0)->getCustomParameter(2).y,
-			mSkyDome->getSubEntity(0)->getCustomParameter(2).z));*/
 		}
 
 		ColourValue fadeColour = DEFAULT_FOG_COLOUR;
@@ -379,12 +556,6 @@ void MagixSkyManager::updateCelestials(const Real &dayTime)
 					ColourValue(mSkyDome->getSubEntity(0)->getCustomParameter(1).x,
 					mSkyDome->getSubEntity(0)->getCustomParameter(1).y,
 					mSkyDome->getSubEntity(0)->getCustomParameter(1).z));
-				/*mSkyDome->getSubEntity(0)->getTechnique()->getPass(0)->getTextureUnitState(2)->setColourOperationEx(LayerBlendOperationEx::LBX_ADD,
-				LayerBlendSource::LBS_MANUAL,
-				LayerBlendSource::LBS_CURRENT,
-				ColourValue(mSkyDome->getSubEntity(0)->getCustomParameter(2).x,
-				mSkyDome->getSubEntity(0)->getCustomParameter(2).y,
-				mSkyDome->getSubEntity(0)->getCustomParameter(2).z));*/
 			}
 			mSceneMgr->setFog(FOG_LINEAR, fadeColour, FOG_DENSITY, FOG_START, FOG_END);
 			mMoon->getBillboard(0)->setColour(ColourValue(1, 1, 1, 0.9));
@@ -444,12 +615,6 @@ void MagixSkyManager::updateCelestials(const Real &dayTime)
 				ColourValue(skyFade.x,
 				skyFade.y,
 				skyFade.z));
-			/*mSkyDome->getSubEntity(0)->getTechnique()->getPass(0)->getTextureUnitState(2)->setColourOperationEx(LayerBlendOperationEx::LBX_ADD,
-			LayerBlendSource::LBS_MANUAL,
-			LayerBlendSource::LBS_CURRENT,
-			ColourValue(mSkyDome->getSubEntity(0)->getCustomParameter(2).x,
-			mSkyDome->getSubEntity(0)->getCustomParameter(2).y,
-			mSkyDome->getSubEntity(0)->getCustomParameter(2).z));*/
 		}
 
 		ColourValue fadeColour = DEFAULT_FOG_COLOUR;
@@ -471,7 +636,7 @@ void MagixSkyManager::updateCelestials(const Real &dayTime)
 		return;
 	}
 #pragma warning(pop)
-}
+}*/
 void MagixSkyManager::updateWeather()
 {
 	weatherSkyShader = ColourValue::White;
@@ -482,6 +647,7 @@ void MagixSkyManager::updateWeather()
 		const WeatherEvent weatherEvent = weatherCycleEventList[i];
 		if (weatherTime >= weatherEvent.start && weatherTime<weatherEvent.end)
 		{
+			if (weatherEvent.FogAdder != 1) FogDistance = weatherEvent.FogAdder;
 			//Constant Effect
 			if (weatherEvent.isConstant)
 			{
@@ -636,7 +802,14 @@ void MagixSkyManager::updateWeatherEffect(const Real &timeElapsed, bool clearEff
 }
 void MagixSkyManager::update(const FrameEvent &evt)
 {
-	skyDayTime += DAYSPEED*evt.timeSinceLastFrame;
+	Time++;
+	if (Time > 400)
+	{
+		skyDayTime ++;//DAYSPEED * evt.timeSinceLastFrame * SPED1;
+		Time = 0;
+	}
+
+	//skyDayTime += DAYSPEED*evt.timeSinceLastFrame;
 	if (skyDayTime >= 2400)skyDayTime = 0;
 	updateSky();
 	updateCelestials(dayTimeFrozen ? frozenDayTime : skyDayTime);

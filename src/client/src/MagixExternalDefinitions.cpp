@@ -7,14 +7,13 @@ void MagixExternalDefinitions::initialize()
 	loadItems((ENCRYPTED_ITEMS) ? "Items.dat" : "Items.cfg", ENCRYPTED_ITEMS);
 	loadHotkeys("Hotkeys.cfg");
 	attackList.clear();
-	loadAttacks("ad1.dat", false);
-	loadAttacks("CustomAttacks.cfg", true);
+	loadAttacks("ad1.cfg", true);
 	critterList.clear();
-	loadCritters("cd1.dat", false);
-	loadCritters("CustomCritters.cfg", true);
-	if (!XOR7FileGen("cd2.dat", "cd2.cfg", true, true))
-		throw(Exception(9, "Corrupted Data File", "cd2.dat, please run the autopatcher."));
-	else _unlink("cd2.cfg");
+	loadCritters("cd1.cfg", true);
+	loadUpdateCaption();
+	//if (!XOR7FileGen("cd2.dat", "cd2.cfg", true, true))
+	//	throw(Exception(9, "Corrupted Data File", "cd2.dat, please run the autopatcher."));
+	//else _unlink("cd2.cfg");
 }
 void MagixExternalDefinitions::initializeCapabilities(const RenderSystemCapabilities *capabilities)
 {
@@ -993,26 +992,22 @@ const String MagixExternalDefinitions::loadBio(const String &name)
 
 	return tData;
 }
-const String MagixExternalDefinitions::loadUpdateCaption()
+void MagixExternalDefinitions::loadUpdateCaption()
 {
-	unsigned int tSize = 0;
-	char *tBuffer;
-	String tData = "";
+	ConfigFile cf;
+	cf.load("update.txt");
+	ConfigFile::SectionIterator seci = cf.getSectionIterator();
+	while (seci.hasMoreElements())
+	{
 
-	std::ifstream inFile;
-	inFile.open("update.txt", std::ifstream::in);
-	if (!inFile.good())return "";
-	inFile.seekg(0, std::ios::end);
-	tSize = (unsigned int)inFile.tellg();
-	inFile.seekg(0, std::ios::beg);
-	tBuffer = new char[tSize];
-	strcpy(tBuffer, "");
-	inFile.getline(tBuffer, tSize, char(128));
-	inFile.close();
-	tData = tBuffer;
-	delete[] tBuffer;
-
-	return tData;
+		const String tSectionName = seci.peekNextKey();
+		ConfigFile::SettingsMultiMap *settings = seci.getNext();
+		ConfigFile::SettingsMultiMap::iterator i;
+		for (i = settings->begin(); i != settings->end(); ++i)
+		{
+			if (StringUtil::startsWith(i->first, "updatetext"))	UpdateLog = UpdateLog + L"" + i->second + "\n";
+		}
+	}
 }
 void MagixExternalDefinitions::loadItems(const String &filename, const bool decrypt)
 {
@@ -1401,6 +1396,7 @@ void MagixExternalDefinitions::loadWeatherCycle(const String &type, vector<const
 			else if (StringUtil::startsWith(i->first, "constant"))tEvent.isConstant = StringConverter::parseBool(i->second);
 			else if (StringUtil::startsWith(i->first, "effectfrequency"))tEvent.effectFrequency = StringConverter::parseReal(i->second);
 			else if (StringUtil::startsWith(i->first, "effect"))tEvent.effect.push_back(i->second);
+			else if (StringUtil::startsWith(i->first, "fogadder"))tEvent.FogAdder = StringConverter::parseReal(i->second);
 		}
 		if (tSectionName != "")list.push_back(tEvent);
 	}
@@ -1731,7 +1727,7 @@ bool MagixExternalDefinitions::loadCritterSpawnList(const String &worldName,
 		list.push_back(WorldCritter("Draw Point", 0.05));
 	}
 	else return true;
-	if (loadCritterSpawnListFile("cd2.dat", worldName, limit, list, roamArea))return true;
+	if (loadCritterSpawnListFile("cd2", worldName, limit, list, roamArea))return true;
 
 	if (loadCustomCritterSpawnList("media/terrains/" + worldName + "/" + customFilename, limit, list, roamArea))return true;
 	return false;

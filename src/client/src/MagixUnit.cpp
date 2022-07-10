@@ -564,7 +564,7 @@ void MagixUnit::updateAnimation(const FrameEvent &evt, MagixExternalDefinitions 
 	}
 	else
 	{
-		if (Math::RangeRandom(0, 100)>99)blinkFlag = 1;
+		if (Math::UnitRandom()<0.0005)blinkFlag = 1;
 	}
 
 	//Random head turning during idle
@@ -594,7 +594,7 @@ void MagixUnit::updateAnimation(const FrameEvent &evt, MagixExternalDefinitions 
 				idleTurnFlag = 0;
 			}
 		}
-		else if (animBase == "Idle" && Math::UnitRandom()>0.997)
+		else if (animBase == "Idle" && Math::UnitRandom()>0.999)
 		{
 			idleTurnFlag = (Math::RangeRandom(0, 10)>5 ? 1 : 2);
 			String tTurnAnim = (idleTurnFlag == 1 ? "TurnLeft" : "TurnRight");
@@ -1104,19 +1104,20 @@ void MagixUnit::updateAction(const FrameEvent &evt, MagixExternalDefinitions *de
 		//Run
 		if (tSpeed>0 && !bReverse && !isWalking && !isCrouching)
 		{
-			Real tAnimSpeed = (Real)((evt.timeSinceLastFrame == 0 ? 1.0 : tSpeed / (30000 * evt.timeSinceLastFrame)));
-			if (tAnimSpeed>1.0)tAnimSpeed = 1.0;
-			changeAnimBase("Run", (Real)1.5 + tAnimSpeed, animBase != "Run");
+			Real tAnimSpeed = 0.3 * (mObjectNode->getScale().x - 2);
+			changeAnimBase("Run", 1.3 - tAnimSpeed, animBase != "Run");
 		}
 		//Crawl
 		else if (tSpeed>0 && isCrouching)
 		{
-			changeAnimBase("Crawl", 1, animBase != "Crawl", bReverse);
+			Real tAnimSpeed = 0.3 * (mObjectNode->getScale().x - 2);
+			changeAnimBase("Crawl", 1 - tAnimSpeed, animBase != "Crawl", bReverse);
 		}
 		//Walk
 		else if (tSpeed>0 && (isWalking || bReverse))
 		{
-			changeAnimBase("Walk", 1.18, animBase != "Walk", bReverse);
+			Real tAnimSpeed = 0.3 * (mObjectNode->getScale().x - 2);
+			changeAnimBase("Walk", 1.4 - tAnimSpeed, animBase != "Walk", bReverse);
 		}
 		//Sit transition
 		else if (animBase == "SitTransition")
@@ -1588,7 +1589,7 @@ void MagixUnit::createUserTag(const String &name, MovableTextOverlayAttributes *
 	mUserText->setUpdateFrequency(0.01);
 	userTagVisible = true;
 }
-void MagixUnit::createChatBubble(String caption, MovableTextOverlayAttributes *attrs, const Real &tLeft, const Real &tTop)
+void MagixUnit::createChatBubble(UTFString caption, MovableTextOverlayAttributes *attrs, const Real &tLeft, const Real &tTop)
 {
 	if (!unitID)return;
 	if (mChatText)delete mChatText;
@@ -2574,7 +2575,7 @@ void MagixUnit::updateLipSync(const FrameEvent &evt)
 		prevLipSyncAnim = "";
 	}
 	if (lipSyncAnim != "")prevLipSyncAnim = lipSyncAnim;
-	char tNext = lipSync[0];
+	wchar_t tNext = lipSync[0];
 	lipSync.erase(0, 1);
 	while (tNext == '(' && lipSync.length()>0)
 	{
@@ -2593,17 +2594,52 @@ void MagixUnit::updateLipSync(const FrameEvent &evt)
 			lipSync.erase(0, 1);
 		}
 	}
-	if (tNext == '('){ stopLipSync(); return; }
-	if (tNext == 'a')lipSyncAnim = "MouthA";
-	else if (tNext == 'e' || tNext == 'n' || tNext == 's' || tNext == 'j' || tNext == 't' || tNext == 'd' || tNext == 'x' || tNext == 'z')lipSyncAnim = "MouthE";
-	else if (tNext == 'm' || tNext == 'b' || tNext == 'p')lipSyncAnim = "MouthM";
-	else if (tNext == 'o' || tNext == 'u' || tNext == 'w')lipSyncAnim = "MouthO";
-	else if (tNext == 'f' || tNext == 'v')lipSyncAnim = "MouthF";
-	else if (tNext == 'i' || tNext == 'y')lipSyncAnim = "MouthI";
-	else if (tNext == 'l' || tNext == 'r')lipSyncAnim = "MouthL";
-	else if (tNext == ' '){ lipSyncCounter = 0.2; lipSyncAnim = ""; }
-	else if (tNext == ','){ lipSyncCounter = 1; lipSyncAnim = ""; }
-	else if (tNext == '.'){ lipSyncCounter = 2; lipSyncAnim = ""; }
+	switch (tNext)
+	{
+	case '(':
+		stopLipSync();
+		break;
+	case L'à': case 'a':
+		lipSyncAnim = "MouthA";
+		break;
+
+	case L'û':case L'å':case 'n':case 's':case 'j':case 'd':case 'x':case 'z':
+		lipSyncAnim = "MouthE";
+		break;
+
+	case L'ì':case L'á':case L'ï':	case 'm':case 'b':case 'p':
+		lipSyncAnim ="MouthM";
+		break;
+
+	case L'î': case L'ó': case 'o': case 'u':
+		lipSyncAnim =  "MouthO";
+		break;
+
+	case L'ô':case L'â':case 'f':case 'v':case 'w':
+		lipSyncAnim ="MouthF";
+		break;
+
+	case L'è':case 'i':case 'y':case 'e':
+		lipSyncAnim = "MouthI";
+		break;
+
+	case L'ð':case L'ë':	case L'ò':	case 'l': case 'r':	case 't':
+		lipSyncAnim ="MouthL";
+		break;
+
+	case ' ':
+		lipSyncCounter = 0.2; lipSyncAnim = "";
+		break;
+	case ',':
+		lipSyncCounter = 1; lipSyncAnim = "";
+		break;
+	case '.':
+		lipSyncCounter = 2; lipSyncAnim = "";
+		break;
+	default:
+		lipSyncCounter = 0.2; lipSyncAnim = "";
+		break;
+	}
 	if (lipSyncAnim == prevLipSyncAnim){ lipSyncCounter = 0.4; return; }
 	if (lipSyncAnim != "")
 	{

@@ -382,7 +382,7 @@ public:
 	void updateListSelectBox();
 	void refreshFriendList();
 	void refreshBio();
-	void refreshTargetBio(String bio, const String &name = "");
+	void refreshTargetBio(UTFString bio, const String &name = "");
 	void resetCampaignScreen();
 	void updateCharScreen(const FrameEvent &evt);
 	void updateChatBox(const FrameEvent &evt);
@@ -397,7 +397,7 @@ public:
 	void mouseRightUp();
 	const String getDebugText();
 	MagixInputManager* getInputManager();
-	void toggleInputMode(bool isEnter, OverlayElement *inputBox = 0, String defaultCaption = "Say: ", unsigned short charLimit = 256, bool clearAtReturn = true, String startText = "", bool allowTempStorage = true, bool allowNewLine = false, bool hideText = false);
+	void toggleInputMode(bool isEnter, OverlayElement *inputBox = 0, UTFString defaultCaption = "Say: ", unsigned short charLimit = 256, bool clearAtReturn = true, UTFString startText = "", bool allowTempStorage = true, bool allowNewLine = false, bool hideText = false);
 	bool selectCurrentObject(SceneNode *object, const unsigned int &flags = 0, bool isRightClick = false);
 	void processSelectBoxClick();
 	void showSelectPanel(bool flag, const String &name = "Target");

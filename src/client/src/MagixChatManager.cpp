@@ -13,7 +13,7 @@ void MagixChatManager::reset(bool clearHistory)
 		}
 	}
 }
-void MagixChatManager::push(const String &caption, const String &sayer, const unsigned char &type)
+void MagixChatManager::push(const UTFString &caption, const String &sayer, const unsigned char &type)
 {
 	const unsigned short tChannel = (type == CHAT_PRIVATE ? channel : ((type == CHAT_LOCAL || type == CHAT_LOCALACTION || type == CHAT_LOCALEVENT) ? 0 : ((type == CHAT_PARTY || type == CHAT_PARTYACTION || type == CHAT_PARTYEVENT) ? 2 : 1)));
 	chatString[tChannel].push_back(caption);
@@ -59,7 +59,7 @@ const String MagixChatManager::getChatBlock(const unsigned short &lines, const R
 	}
 	return tFinalChat;
 }
-void MagixChatManager::processInput(String &caption, unsigned char &type, String &param)
+void MagixChatManager::processInput(UTFString &caption, unsigned char &type, UTFString &param)
 {
 	if (channel == 0)type = CHAT_LOCAL;
 	if (channel == 2)type = CHAT_PARTY;
@@ -327,15 +327,15 @@ void MagixChatManager::processInput(String &caption, unsigned char &type, String
 		return;
 	}
 }
-void MagixChatManager::say(MagixUnitManager *unitMgr, MagixUnit *target, const String &caption, const unsigned char &type)
+void MagixChatManager::say(MagixUnitManager *unitMgr, MagixUnit *target, const UTFString &caption, const unsigned char &type)
 {
-	const String tName = (((!doLocalUsername && (type == CHAT_LOCAL || type == CHAT_LOCALACTION || type == CHAT_LOCALEVENT || type == CHAT_PARTY || type == CHAT_PARTYACTION || type == CHAT_PARTYEVENT)) ||
+	const UTFString tName = (((!doLocalUsername && (type == CHAT_LOCAL || type == CHAT_LOCALACTION || type == CHAT_LOCALEVENT || type == CHAT_PARTY || type == CHAT_PARTYACTION || type == CHAT_PARTYEVENT)) ||
 		(doGeneralCharname && (type == CHAT_GENERAL || type == CHAT_ACTION || type == CHAT_EVENT)) ||
 		target->getUser() == "") ? target->getName() : target->getUser());
 	if ((type != CHAT_LOCAL && type != CHAT_LOCALACTION) || target->getBodyEnt()->isVisible())push(caption, tName, type);
 	if ((type == CHAT_LOCAL || type == CHAT_PARTY) && target->getBodyEnt()->isVisible())unitMgr->createChatBubble(target, caption);
 }
-void MagixChatManager::message(const String &caption, const unsigned char &type)
+void MagixChatManager::message(const UTFString &caption, const unsigned char &type)
 {
 	if (type == 0)push(caption, "", (channel == 0 ? CHAT_LOCAL : (channel == 1 ? CHAT_GENERAL : CHAT_PARTY)));
 	else push(caption, "", type);
@@ -350,25 +350,25 @@ bool MagixChatManager::getHasNewLine(const unsigned char &chan)
 {
 	return hasNewLine[chan];
 }
-const String MagixChatManager::prefixChatLine(const String &caption, const String &sayer, const unsigned char &type, bool isPostfixLength)
+const UTFString MagixChatManager::prefixChatLine(const UTFString &caption, const String &sayer, const unsigned char &type, bool isPostfixLength)
 {
 	//Prefix
-	String tLine = "";
+	UTFString tLine = "";
 	if (sayer != "" && !isPostfixLength)
 	{
-		if (type == CHAT_ADMIN)tLine += "(" USER_ADMIN_TEXT ")";
-		else if (type == CHAT_MOD)tLine += "(" USER_MOD_TEXT ")";
-		if (type == CHAT_ACTION || type == CHAT_PARTYACTION || type == CHAT_LOCALACTION)tLine += sayer + " ";
-		else if (type == CHAT_PRIVATE)tLine += "((" + sayer + ")) ";
-		else if (type == CHAT_EVENT || type == CHAT_LOCALEVENT || type == CHAT_PARTYEVENT)tLine += "[" + sayer + " ";
-		else tLine += "<" + sayer + "> ";
+		if (type == CHAT_ADMIN)tLine = L"" + tLine + "(" USER_ADMIN_TEXT ")";
+		else if (type == CHAT_MOD)tLine = L"" + tLine + "(" USER_MOD_TEXT ")";
+		if (type == CHAT_ACTION || type == CHAT_PARTYACTION || type == CHAT_LOCALACTION)tLine = L"" + tLine + sayer + " ";
+		else if (type == CHAT_PRIVATE)tLine = L"" + tLine + "((" + sayer + ")) ";
+		else if (type == CHAT_EVENT || type == CHAT_LOCALEVENT || type == CHAT_PARTYEVENT)tLine = L"" + tLine + "[" + sayer + " ";
+		else tLine = L"" + tLine + "<" + sayer + "> ";
 	}
 	//Caption
-	tLine += caption;
+	tLine = L"" + tLine + caption;
 	//Postfix
 	if (sayer != "" && (caption != "" || isPostfixLength))
 	{
-		if (type == CHAT_EVENT || type == CHAT_LOCALEVENT || type == CHAT_PARTYEVENT)tLine += "]";
+		if (type == CHAT_EVENT || type == CHAT_LOCALEVENT || type == CHAT_PARTYEVENT)tLine = L"" + tLine + "]";
 	}
 
 	return tLine;
@@ -381,9 +381,9 @@ const unsigned short MagixChatManager::getPostfixLength(const String &sayer, con
 {
 	return (int)prefixChatLine("", sayer, type, true).length();
 }
-const String MagixChatManager::processChatString(const String &caption, const String &sayer, const unsigned char &type, const Real &boxWidth, const Real &charHeight)
+const UTFString MagixChatManager::processChatString(const UTFString &caption, const String &sayer, const unsigned char &type, const Real &boxWidth, const Real &charHeight)
 {
-	String tCaption = prefixChatLine(caption, sayer, type);
+	UTFString tCaption = prefixChatLine(caption, sayer, type);
 	//String tPrefix = prefixChatLine("",sayer,type);
 	const unsigned short tPrefix = getPrefixLength(sayer, type);
 	const unsigned short tPostfix = getPostfixLength(sayer, type);

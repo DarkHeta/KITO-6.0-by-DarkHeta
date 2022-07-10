@@ -199,7 +199,7 @@ bool MagixHandler::update(const FrameEvent &evt)
 			}
 			mGameStateManager->setDimension(tDimension);
 		}
-		mGui->setChatChannel(1);
+		mGui->setChatChannel(0);
 		if (mNetworkManager->connect())mGameStateManager->setGameState(GAMESTATE_CONNECTING);
 		break;
 	case GAMESTATE_CONNECTING:

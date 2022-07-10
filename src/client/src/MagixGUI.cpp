@@ -276,7 +276,7 @@ void MagixGUI::initialize(SceneManager *sceneMgr, RenderWindow *window, MagixExt
 	mButtonText[BUTTON_QUIT] = OverlayManager::getSingleton().getOverlayElement("GUI/StartScreenButtonText3");
 
 	OverlayManager::getSingleton().getOverlayElement("GUI/UpdateBox")->hide();
-	OverlayManager::getSingleton().getOverlayElement("GUI/UpdateBoxText")->setCaption(mDef->loadUpdateCaption());
+	OverlayManager::getSingleton().getOverlayElement("GUI/UpdateBoxText")->setCaption(L"" + mDef->UpdateLog);
 
 	showStartScreenOverlay(false);
 
@@ -1988,11 +1988,11 @@ void MagixGUI::refreshBio()
 {
 	const String tName = mUnitManager->getPlayer()->getName();
 	OverlayManager::getSingleton().getOverlayElement("GUI/BioBoxName")->setCaption(tName);
-	String tBio = mDef->loadBio(tName);
+	UTFString tBio = L"" + mDef->loadBio(tName);
 	if (tBio == "")tBio = "None";
 	else mInputManager->normalizeText(tBio, mBoxText[GUI_BIOBOX]);
 	bioList.clear();
-	String tLine = "";
+	UTFString tLine = L"";
 	for (int i = 0; i<(int)tBio.length(); i++)
 	{
 		if (tBio[i] == '\n')
@@ -2000,18 +2000,18 @@ void MagixGUI::refreshBio()
 			bioList.push_back(tLine);
 			tLine = "";
 		}
-		else tLine += tBio[i];
+		else tLine = L""+ tLine + tBio[i];
 	}
 	if (tLine != "")bioList.push_back(tLine);
 }
-void MagixGUI::refreshTargetBio(String bio, const String &name)
+void MagixGUI::refreshTargetBio(UTFString bio, const String &name)
 {
 	if (name != "")OverlayManager::getSingleton().getOverlayElement("GUI/TargetBioBoxName")->setCaption(name);
 
 	if (bio == "")bio = "None";
 	else mInputManager->normalizeText(bio, mBoxText[GUI_TARGETBIOBOX]);
 	targetBioList.clear();
-	String tLine = "";
+	UTFString tLine = "";
 	for (int i = 0; i<(int)bio.length(); i++)
 	{
 		if (bio[i] == '\n')
@@ -2019,7 +2019,7 @@ void MagixGUI::refreshTargetBio(String bio, const String &name)
 			targetBioList.push_back(tLine);
 			tLine = "";
 		}
-		else tLine += bio[i];
+		else tLine = L"" + tLine + bio[i];
 	}
 	if (tLine != "")targetBioList.push_back(tLine);
 }
@@ -2089,8 +2089,8 @@ void MagixGUI::updateChatBox(const FrameEvent &evt)
 	if (tCharHeight == 0)return;
 	const Real tLines = mBox[GUI_TEXTOUTPUT]->getHeight() / tCharHeight - 1;
 
-	mBoxText[GUI_TEXTOUTPUT]->setCaption((Ogre::UTFString)atow(mChatManager->getChatBlock(Math::IFloor(tLines), mBoxText[GUI_TEXTOUTPUT]->getWidth(), tCharHeight, (1 - getScroll(SCROLLER_TEXTOUTPUT)))));
-	mBoxText[GUI_TEXTOUTPUT]->setTop((tLines - Math::IFloor(tLines))*tCharHeight + 0.008);
+	mBoxText[GUI_TEXTOUTPUT]->setCaption(mChatManager->getChatBlock(Math::IFloor(tLines), mBoxText[GUI_TEXTOUTPUT]->getWidth() - 0.09, tCharHeight, (1 - getScroll(SCROLLER_TEXTOUTPUT))));
+	mBoxText[GUI_TEXTOUTPUT]->setTop((tLines - Math::IFloor(tLines))*tCharHeight + 0.01);
 }
 void MagixGUI::updateHover()
 {
@@ -3295,14 +3295,14 @@ MagixInputManager* MagixGUI::getInputManager()
 {
 	return mInputManager;
 }
-void MagixGUI::toggleInputMode(bool isEnter, OverlayElement *inputBox, String defaultCaption, unsigned short charLimit, bool clearAtReturn, String startText, bool allowTempStorage, bool allowNewLine, bool hideText)
+void MagixGUI::toggleInputMode(bool isEnter, OverlayElement *inputBox, UTFString defaultCaption, unsigned short charLimit, bool clearAtReturn, UTFString startText, bool allowTempStorage, bool allowNewLine, bool hideText)
 {
 	if (mInputManager->getInputMode() == INPUT_CONTROL)
 	{
 		if (!inputBox)
 		{
 			inputBox = mBoxText[GUI_TEXTINPUT];
-			String tCaption = mBoxText[GUI_TEXTINPUT]->getCaption();
+			UTFString tCaption = mBoxText[GUI_TEXTINPUT]->getCaption();
 			tCaption.erase(0, 5);
 			startText = tCaption;
 		}
@@ -3332,11 +3332,11 @@ void MagixGUI::toggleInputMode(bool isEnter, OverlayElement *inputBox, String de
 	{
 		if (mInputManager->getInputBox() == mBoxText[GUI_TEXTINPUT])
 		{
-			String tCaption = mInputManager->getInputText();
+			UTFString tCaption = mInputManager->getInputText();
 			unsigned char tType = CHAT_GENERAL;
 			if (mDef->isAdmin)tType = CHAT_ADMIN;
 			else if (mDef->isMod && mDef->isModOn)tType = CHAT_MOD;
-			String tParam = "";
+			UTFString tParam = "";
 
 			mChatManager->processInput(tCaption, tType, tParam);
 			if (tType == CHAT_INVALID)return;
@@ -3508,12 +3508,12 @@ void MagixGUI::toggleInputMode(bool isEnter, OverlayElement *inputBox, String de
 	//Bio
 	if (mInputManager->getInputBox() == mBoxText[GUI_BIOBOX] && mInputManager->getInputMode() == INPUT_CONTROL)
 	{
-		String tBio = mInputManager->getInputText();
+		UTFString tBio = L"" + mInputManager->getInputText();
 		mInputManager->normalizeText(tBio, mBoxText[GUI_BIOBOX]);
 		mDef->saveBio(OverlayManager::getSingleton().getOverlayElement("GUI/BioBoxName")->getCaption(), tBio);
 		if (tBio == "")tBio = "None";
 		bioList.clear();
-		String tLine = "";
+		UTFString tLine = "";
 		for (int i = 0; i<(int)tBio.length(); i++)
 		{
 			if (tBio[i] == '\n')
@@ -3521,7 +3521,7 @@ void MagixGUI::toggleInputMode(bool isEnter, OverlayElement *inputBox, String de
 				bioList.push_back(tLine);
 				tLine = "";
 			}
-			else tLine += tBio[i];
+			else tLine = L"" + tLine + tBio[i];
 		}
 		if (tLine != "")bioList.push_back(tLine);
 

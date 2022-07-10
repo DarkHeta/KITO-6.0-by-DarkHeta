@@ -1,6 +1,6 @@
 #include "MovableTextOverlay.h"
 
-MovableTextOverlay::MovableTextOverlay(const Ogre::String & name, const Ogre::String & caption,
+MovableTextOverlay::MovableTextOverlay(const Ogre::UTFString & name, const Ogre::UTFString & caption,
 	const Ogre::MovableObject *mov, MovableTextOverlayAttributes *attrs, const Real &tLeft, const Real &tTop, const Real &yOffset)
 	: mpMov(mov)
 	, mpOv(NULL)
@@ -58,7 +58,7 @@ MovableTextOverlay::~MovableTextOverlay()
 {
 	// overlay cleanup -- Ogre would clean this up at app exit but if your app 
 	// tends to create and delete these objects often it's a good idea to do it here.
-	const Ogre::String mmName = mName;
+	const Ogre::UTFString mmName = mName;
 	mpOv->hide();
 	Ogre::OverlayManager *overlayManager = Ogre::OverlayManager::getSingletonPtr();
 	mpOvContainer->removeChild(mmName + "_OvTxt");
@@ -74,14 +74,12 @@ MovableTextOverlay::~MovableTextOverlay()
 		overlayManager->destroyOverlayElement(mpOvContainer);
 }
 
-void MovableTextOverlay::setCaption(const Ogre::String & caption)
+void MovableTextOverlay::setCaption(const Ogre::UTFString & caption)
 {
 	if (caption != mCaption)
 	{
 		mCaption = caption;
-		std::wstringstream wstrm;
-		wstrm << caption.c_str();
-		mpOvText->setCaption((Ogre::UTFString)wstrm.str());
+		mpOvText->setCaption(mCaption);
 		mNeedUpdate = true;
 	}
 }
@@ -96,9 +94,9 @@ void MovableTextOverlay::_computeTextSize()
 
 	for (int i = 0; i<int(tText.size()); i++)
 	{
-		String tLine = tText[i];
+		UTFString tLine = tText[i];
 		Real tTextWidth = 0;
-		for (Ogre::String::iterator i = tLine.begin(); i < tLine.end(); i++)
+		for (Ogre::UTFString::iterator i = tLine.begin(); i < tLine.end(); i++)
 		{
 			if (*i == 0x0020)
 				tTextWidth += pFont->getGlyphAspectRatio(0x0030);
@@ -237,8 +235,8 @@ void MovableTextOverlay::update(const Real &timeSincelastFrame, bool placeAtTop,
 	//container "chases" towards update position
 	if (chaseUpdate)
 	{
-		tX = (Real)((tX - mpOvContainer->getLeft())*0.08);
-		tY = (Real)((tY - mpOvContainer->getTop())*0.08);
+		tX = (tX - mpOvContainer->getLeft())*0.08;
+		tY = (tY - mpOvContainer->getTop())*0.08;
 		mpOvContainer->setPosition(mpOvContainer->getLeft() + tX, mpOvContainer->getTop() + tY);
 	}
 	else mpOvContainer->setPosition(tX, tY);
@@ -258,8 +256,8 @@ void MovableTextOverlay::update(const Real &timeSincelastFrame, bool placeAtTop,
 
 void MovableTextOverlay::_updateOverlayAttrs()
 {
-	const String &newMatName = mAttrs->getMaterialName();
-	const String &oldMatName = mpOvContainer->getMaterialName();
+	const UTFString &newMatName = mAttrs->getMaterialName();
+	const UTFString &oldMatName = mpOvContainer->getMaterialName();
 	if (oldMatName != newMatName)
 	{
 		if (oldMatName.length())
@@ -280,14 +278,14 @@ void MovableTextOverlay::_updateOverlayAttrs()
 }
 
 
-MovableTextOverlayAttributes::MovableTextOverlayAttributes(const Ogre::String & name, const Ogre::Camera *cam,
-	const Ogre::String & fontName, const int &charHeight, const Ogre::ColourValue & color, const Ogre::String & materialName)
+MovableTextOverlayAttributes::MovableTextOverlayAttributes(const Ogre::UTFString & name, const Ogre::Camera *cam,
+	const Ogre::UTFString & fontName, const int &charHeight, const Ogre::ColourValue & color, const Ogre::UTFString & materialName)
 	: mpCam(cam)
 	, mpFont(NULL)
 	, mName(name)
 	, mFontName("")
 	, mMaterialName("")
-	, mCharHeight((Real)charHeight)
+	, mCharHeight(charHeight)
 	, mColor(ColourValue::ZERO)
 {
 	if (fontName.length() == 0)
@@ -304,7 +302,7 @@ MovableTextOverlayAttributes::~MovableTextOverlayAttributes()
 	setMaterialName("");
 }
 
-void MovableTextOverlayAttributes::setFontName(const Ogre::String & fontName)
+void MovableTextOverlayAttributes::setFontName(const Ogre::UTFString & fontName)
 {
 	if (mFontName != fontName || !mpFont)
 	{
@@ -325,7 +323,7 @@ void MovableTextOverlayAttributes::setFontName(const Ogre::String & fontName)
 	}
 }
 
-void MovableTextOverlayAttributes::setMaterialName(const Ogre::String & materialName)
+void MovableTextOverlayAttributes::setMaterialName(const Ogre::UTFString & materialName)
 {
 	if (mMaterialName != materialName)
 	{
@@ -350,5 +348,5 @@ void MovableTextOverlayAttributes::setColor(const Ogre::ColourValue & color)
 
 void MovableTextOverlayAttributes::setCharacterHeight(const unsigned int &height)
 {
-	mCharHeight = (Real)height;
+	mCharHeight = height;
 }

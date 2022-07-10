@@ -114,7 +114,7 @@ public:
 	void deleteAllUnits();
 	void createNameTag(MagixUnit *target, const String &name);
 	void createUserTag(MagixUnit *target, const String &name);
-	void createChatBubble(MagixUnit *target, const String &caption);
+	void createChatBubble(MagixUnit *target, const UTFString &caption);
 	void updateNameTag(/*RectLayoutManager &m, */MovableTextOverlay *p);
 	void updateChatBubble(/*RectLayoutManager &m, */MovableTextOverlay *p);
 	MagixUnit* getByObjectNode(SceneNode *objectNode);

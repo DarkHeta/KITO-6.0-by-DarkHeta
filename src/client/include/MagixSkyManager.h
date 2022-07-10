@@ -10,7 +10,6 @@
 using namespace Ogre;
 
 //#define MAX_CLOUDS 10
-#define MAX_STARS 77
 #define NORTH Vector3::UNIT_Z
 #define EAST Vector3::NEGATIVE_UNIT_X
 #define SOUTH Vector3::NEGATIVE_UNIT_Z
@@ -36,7 +35,6 @@ protected:
 	BillboardSet *mSun;
 	BillboardSet *mSunRadiance;
 	BillboardSet *mMoon;
-	BillboardSet *mStars;
 	Light *mSunLight;
 	Light *mMoonLight;
 	//Ogre::TerrainGlobalOptions* mTerrainGlobals;
@@ -57,7 +55,9 @@ protected:
 	vector<const WeatherEvent>::type weatherCycleEventList;
 	bool hasWeatherSound;
 	bool interiorSky;
+	int Time;
 	Real FOG_START, FOG_END;
+	Real FogDistance;
 public:
 	MagixSkyManager();
 	~MagixSkyManager();

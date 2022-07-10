@@ -1007,7 +1007,7 @@ void MagixUnitManager::createUserTag(MagixUnit *target, const String &name)
 	if (target)target->createUserTag(name, mUserTagAttr);
 	if (!shouldNameTagsBeVisible)target->showUserTag(false);
 }
-void MagixUnitManager::createChatBubble(MagixUnit *target, const String &caption)
+void MagixUnitManager::createChatBubble(MagixUnit *target, const UTFString &caption)
 {
 	if (target)target->createChatBubble(caption, mChatBubbleAttr, 0, (Real)(target == mPlayer ? 1 : 0));
 }
