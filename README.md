@@ -18,7 +18,7 @@ http://go.microsoft.com/fwlink/?LinkId=517284
 4. Find GameConfig.h in the files overview
  1. If you cant find it, then open it in the Config folder of the kito folder.
 5. Modify it to your needs
-6. Compile the entire solution in toolbar: Build -> Build Solution)
+6. Compile the entire solution in toolbar: Build -> Build Solution
 7. Once the entire solution has been compiled then nagivate to the build folder and find client and server
 8. Modify the game with your media
 
@@ -27,4 +27,5 @@ http://go.microsoft.com/fwlink/?LinkId=517284
 2. Added Day/Night cycle
 3. Changed star system
 4. Changed Unit's behaviour
+
 More up coming!
