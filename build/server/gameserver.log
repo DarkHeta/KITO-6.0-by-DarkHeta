@@ -1,0 +1,18 @@
+﻿Build started 03.04.2022 14:53:05.
+     1>Project "E:\Eternal time\CODE\DarkHeta's KITO6.0\gameserver.vcxproj" on node 2 (Build target(s)).
+     1>C:\Program Files (x86)\MSBuild\Microsoft.Cpp\v4.0\V120\Microsoft.CppBuild.targets(363,5): warning MSB8004: Intermediate Directory does not end with a trailing slash.  This build instance will add the slash as it is required to allow proper evaluation of the Intermediate Directory.
+     1>C:\Program Files (x86)\MSBuild\Microsoft.Cpp\v4.0\V120\Microsoft.CppBuild.targets(364,5): warning MSB8004: Output Directory does not end with a trailing slash.  This build instance will add the slash as it is required to allow proper evaluation of the Output Directory.
+     1>ClCompile:
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /I"E:\Eternal time\CODE\DarkHeta's KITO6.0\src\server\GameServer" /I"E:\Eternal time\CODE\DarkHeta's KITO6.0\config" /I"E:\Eternal time\CODE\DarkHeta's KITO6.0\src\client\include" /I"E:\Eternal time\CODE\DarkHeta's KITO6.0\deps\RakNet-3.25\Source" /Zi /nologo /W3 /WX- /O2 /Oi /Oy- /GL /D WIN32 /D NDEBUG /D _CONSOLE /D _MBCS /Gm- /EHsc /MD /GS /Gy /fp:precise /Zc:wchar_t /Zc:forScope /Fo"E:\Eternal time\CODE\DarkHeta's KITO6.0\build\server\\" /Fd"E:\Eternal time\CODE\DarkHeta's KITO6.0\build\server\vc120.pdb" /Gd /TP /analyze- /errorReport:prompt src\server\GameServer\GameServer.cpp
+         GameServer.cpp
+     1>src\server\GameServer\GameServer.cpp(1109): warning C4101: 'tTypeID' : unreferenced local variable
+     1>src\server\GameServer\GameServer.cpp(2210): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\include\string.h(112) : see declaration of 'strcpy'
+       Link:
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"E:\Eternal time\CODE\DarkHeta's KITO6.0\build\server\gameserver.exe" /NOLOGO /LIBPATH:"E:\Eternal time\CODE\DarkHeta's KITO6.0\deps\RakNet-3.25\Lib" RakNet_LibStatic_Release_Win32.lib ws2_32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"E:\Eternal time\CODE\DarkHeta's KITO6.0\build\server\gameserver.pdb" /OPT:REF /OPT:ICF /LTCG /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"E:\Eternal time\CODE\DarkHeta's KITO6.0\build\server\gameserver.lib" /MACHINE:X86 /SAFESEH "E:\Eternal time\CODE\DarkHeta's KITO6.0\build\server\GameServer.obj"
+     1>LINK : fatal error LNK1104: cannot open file 'E:\Eternal time\CODE\DarkHeta's KITO6.0\build\server\gameserver.exe'
+     1>Done Building Project "E:\Eternal time\CODE\DarkHeta's KITO6.0\gameserver.vcxproj" (Build target(s)) -- FAILED.
+
+Build FAILED.
+
+Time Elapsed 00:00:01.03
