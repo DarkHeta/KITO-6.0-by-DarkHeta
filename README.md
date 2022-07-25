@@ -27,5 +27,7 @@ http://go.microsoft.com/fwlink/?LinkId=517284
 2. Added Day/Night cycle
 3. Changed star system
 4. Changed Unit's behaviour
+5. Added Colour for Mod and Admin tags
+6. Added ability to change font for Admin
 
 More up coming!
