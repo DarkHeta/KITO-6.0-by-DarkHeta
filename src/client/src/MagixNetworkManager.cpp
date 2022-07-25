@@ -590,8 +590,7 @@ void MagixNetworkManager::processNewPlayer(Packet *p)
 		tBadData ? mUnitManager->createUnit(tToken, "Body", "Head1", "Maneless", "Tail1", "Wingless", tMatName, "Tuftless")
 		: mUnitManager->createUnit(tToken, tParam[0], tParam[1], mDef->hasManeMesh(tParam[2]) ? tParam[2] : "Maneless", (mDef->hasTailMesh(tParam[3]) ? tParam[3] : "Tail1"), (mDef->hasWingMesh(tParam[4]) ? tParam[4] : "Wingless"), tMatName, (mDef->hasTuftMesh(tParam2[0]) ? tParam2[0] : "Tuftless"));
 	tUnit->setHP(500);
-	mUnitManager->createNameTag(tUnit, tName);
-	mUnitManager->createUserTag(tUnit, tUser);
+	
 	if (!tDefaultScale)
 	{
 		float tScale;
@@ -618,6 +617,9 @@ void MagixNetworkManager::processNewPlayer(Packet *p)
 	stringCompressor->DecodeString(tAdminToken, 8, &tBitStream);
 	tUnit->isAdmin = (String(tAdminToken) == "ok.");
 	tUnit->isMod = (String(tAdminToken) == "mod");
+
+	mUnitManager->createNameTag(tUnit, tName);
+	mUnitManager->createUserTag(tUnit, tUser, tUnit->isAdmin, tUnit->isMod);
 
 	String tAddMessage = "";
 	if (tUnit->isFriend)tAddMessage = " (Friend)";

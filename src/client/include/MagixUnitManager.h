@@ -64,6 +64,8 @@ protected:
 	RaySceneQuery *mRayQuery;
 	MovableTextOverlayAttributes *mNameTagAttr;
 	MovableTextOverlayAttributes *mUserTagAttr;
+	MovableTextOverlayAttributes *mAdminTagAttr;
+	MovableTextOverlayAttributes *mModTagAttr;
 	MovableTextOverlayAttributes *mChatBubbleAttr;
 	MagixLiving *mPlayerTarget;
 	bool playerTargetChanged;
@@ -113,7 +115,7 @@ public:
 	void deleteUnit(MagixIndexedUnit *target);
 	void deleteAllUnits();
 	void createNameTag(MagixUnit *target, const String &name);
-	void createUserTag(MagixUnit *target, const String &name);
+	void createUserTag(MagixUnit *target, const String &name, bool Admin = false, bool Mod = false);
 	void createChatBubble(MagixUnit *target, const UTFString &caption);
 	void updateNameTag(/*RectLayoutManager &m, */MovableTextOverlay *p);
 	void updateChatBubble(/*RectLayoutManager &m, */MovableTextOverlay *p);

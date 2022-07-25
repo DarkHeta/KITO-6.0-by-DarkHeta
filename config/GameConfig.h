@@ -21,6 +21,15 @@
 #define MAX_STASH 20
 #define MAX_PARTYMEMBERS 6
 
+//Admin name coloring (R, G, B, Alpha)
+#define AdmName ColourValue(1, 0, 0, 1)
+//Admin name font
+#define AdmNameFont "Balsoon"
+
+//Mod name coloring (R, G, B, Alpha)
+#define ModName ColourValue(0, 1, 0, 1)
+
+
 // BIG FAT WARNING:
 // DO NOT DECREASE THESE VALUES ONCE SET. WILL LEAD TO CRASHES
 // Read the names of these defines and they'll make sense (Game Max ____)

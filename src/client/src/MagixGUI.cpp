@@ -2052,7 +2052,7 @@ void MagixGUI::updateCharScreen(const FrameEvent &evt)
 		{
 			mNetworkManager->disconnect();
 			mUnitManager->createNameTag(mUnitManager->getPlayer(), mCharScreenManager->getName());
-			mUnitManager->createUserTag(mUnitManager->getPlayer(), logonUsername);
+			mUnitManager->createUserTag(mUnitManager->getPlayer(), logonUsername, mDef->isAdmin, mDef->isMod);
 			mGameStateManager->setGameState(GAMESTATE_STARTCONNECTION);
 			showOptionsOverlay(false);
 		}

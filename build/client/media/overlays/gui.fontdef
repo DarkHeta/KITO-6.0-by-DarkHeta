@@ -20,3 +20,11 @@ TempusSans
 	size 		64
 	resolution 	55
 }
+
+Balsoon
+{
+	type 		truetype
+	source 		Balsoon.ttf
+	size 		64
+	resolution 	55
+}

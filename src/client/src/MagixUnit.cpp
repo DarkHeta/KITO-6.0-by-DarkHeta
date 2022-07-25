@@ -1577,7 +1577,7 @@ void MagixUnit::createNameTag(const String &name, MovableTextOverlayAttributes *
 	if (mNameText)delete mNameText;
 	mNameText = new MovableTextOverlay("NameTag" + StringConverter::toString(unitID), name, mBodyEnt, attrs);
 	mNameText->enable(false);
-	mNameText->setUpdateFrequency(0.01);
+	mNameText->setUpdateFrequency(0.001);
 	nameTagVisible = true;
 }
 void MagixUnit::createUserTag(const String &name, MovableTextOverlayAttributes *attrs)
@@ -1586,7 +1586,7 @@ void MagixUnit::createUserTag(const String &name, MovableTextOverlayAttributes *
 	if (mUserText)delete mUserText;
 	mUserText = new MovableTextOverlay("UserTag" + StringConverter::toString(unitID), name, mBodyEnt, attrs, 0, 0, 16);
 	mUserText->enable(false);
-	mUserText->setUpdateFrequency(0.01);
+	mUserText->setUpdateFrequency(0.001);
 	userTagVisible = true;
 }
 void MagixUnit::createChatBubble(UTFString caption, MovableTextOverlayAttributes *attrs, const Real &tLeft, const Real &tTop)

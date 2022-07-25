@@ -16,6 +16,7 @@ MagixUnitManager::MagixUnitManager()
 	mSceneMgr = 0;
 	mRayQuery = 0;
 	mNameTagAttr = 0;
+	mAdminTagAttr = 0;
 	mUserTagAttr = 0;
 	mChatBubbleAttr = 0;
 	mPlayerTarget = 0;
@@ -38,6 +39,8 @@ MagixUnitManager::~MagixUnitManager()
 	if (mRayQuery)delete mRayQuery;
 	if (mNameTagAttr)delete mNameTagAttr;
 	if (mUserTagAttr)delete mUserTagAttr;
+	if (mAdminTagAttr)delete mAdminTagAttr;
+	if (mModTagAttr)delete mModTagAttr;
 	if (mChatBubbleAttr)delete mChatBubbleAttr;
 }
 void MagixUnitManager::initialize(SceneManager *sceneMgr, MagixExternalDefinitions *def, MagixGameStateManager *gameStateMgr, MagixWorld *world, MagixEffectsManager *effectsMgr, MagixCollisionManager *collisionMgr, MagixSoundManager *soundMgr, MagixItemManager *itemMgr, MagixCritterManager *critterMgr, MagixCamera *camera)
@@ -53,9 +56,11 @@ void MagixUnitManager::initialize(SceneManager *sceneMgr, MagixExternalDefinitio
 	mCritterManager = critterMgr;
 	mCamera = camera;
 	mRayQuery = sceneMgr->createRayQuery(Ray());
-	mNameTagAttr = new MovableTextOverlayAttributes("Attrs1", sceneMgr->getCamera("PlayerCam"), "Tahoma", 16, ColourValue::White, "GUIMat/ButtonUp");
+	mModTagAttr = new MovableTextOverlayAttributes("ModNameAttrs", sceneMgr->getCamera("PlayerCam"), "Tahoma", 16, ModName);
+	mAdminTagAttr = new MovableTextOverlayAttributes("AdminNameAttrs", sceneMgr->getCamera("PlayerCam"), AdmNameFont, 16, AdmName);
+	mNameTagAttr = new MovableTextOverlayAttributes("Attrs1", sceneMgr->getCamera("PlayerCam"), "Tahoma", 18, ColourValue::White);
 	mChatBubbleAttr = new MovableTextOverlayAttributes("Attrs2", sceneMgr->getCamera("PlayerCam"), "Tahoma", 16, ColourValue(1, 0.6, 0), "GUIMat/StatsBlockCenter");
-	mUserTagAttr = new MovableTextOverlayAttributes("Attrs3", sceneMgr->getCamera("PlayerCam"), "Tahoma", 14, ColourValue(1, 0.6, 0), "GUIMat/ButtonUp");
+	mUserTagAttr = new MovableTextOverlayAttributes("Attrs3", sceneMgr->getCamera("PlayerCam"), "Tahoma", 16, ColourValue(1, 0.6, 0));
 }
 void MagixUnitManager::reset(bool destroyPlayer, bool resetPosition)
 {
@@ -999,12 +1004,20 @@ void MagixUnitManager::deleteAllUnits()
 }
 void MagixUnitManager::createNameTag(MagixUnit *target, const String &name)
 {
-	if (target)target->createNameTag(name, mNameTagAttr);
+	if (target)
+	{
+		target->createNameTag(name, mNameTagAttr);
+	}
 	if (!shouldNameTagsBeVisible)target->showNameTag(false);
 }
-void MagixUnitManager::createUserTag(MagixUnit *target, const String &name)
+void MagixUnitManager::createUserTag(MagixUnit *target, const String &name, bool Admin, bool Mod)
 {
-	if (target)target->createUserTag(name, mUserTagAttr);
+	if (target)
+	{
+		if (Admin)target->createUserTag(name, mAdminTagAttr);
+		else if (Mod)target->createUserTag(name, mModTagAttr);
+		else target->createUserTag(name, mUserTagAttr);
+	}
 	if (!shouldNameTagsBeVisible)target->showUserTag(false);
 }
 void MagixUnitManager::createChatBubble(MagixUnit *target, const UTFString &caption)
