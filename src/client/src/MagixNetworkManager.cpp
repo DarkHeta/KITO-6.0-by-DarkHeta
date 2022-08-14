@@ -651,6 +651,9 @@ void MagixNetworkManager::processNewPlayer(Packet *p)
 	mChatManager->message(tAddName + tAddMessage + " has arrived.", (mUnitManager->isPartyMember(tUnit) ? 0 : (mChatManager->getChannel() == 0 ? CHAT_LOCAL : CHAT_GENERAL)));
 	if (tBadData)mChatManager->message("Error notice:" + tAddName + "has sent erroneous data.");
 
+	if (mWorld->isArena) tUnit->setAlliance(ALLIANCE_ENEMY);
+	else  tUnit->setAlliance(ALLIANCE_FRIEND);
+
 	//Process early position packets
 	for (vector<const std::pair<OwnerToken, PositionInfo>>::type::iterator it = playerPositionQueue.begin(); it != playerPositionQueue.end(); it++)
 	{

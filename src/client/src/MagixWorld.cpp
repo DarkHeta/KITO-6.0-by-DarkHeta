@@ -38,6 +38,7 @@ MagixWorld::MagixWorld()
 	critterSpawnList.clear();
 	critterRoamAreaList.clear();
 	critterSpawnLimit = 0;
+	isArena = false;
 }
 MagixWorld::~MagixWorld()
 {
@@ -373,6 +374,10 @@ void MagixWorld::loadWorld(const String &name)
 				{
 					mSoundManager->setRandomPlaylist(false);
 					mSoundManager->playMusic(tLine[1].c_str());
+				}
+				else if (StringUtil::startsWith(tLine[0], "Arena", false))
+				{
+					isArena = StringConverter::parseBool(tLine[1]);
 				}
 			}
 		}
@@ -857,6 +862,7 @@ void MagixWorld::loadWorld(const String &name)
 }
 void MagixWorld::unloadWorld()
 {
+	isArena = false;
 	worldName = "";
 	isInterior = false;
 	mapEffect = "";

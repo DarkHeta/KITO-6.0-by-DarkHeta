@@ -176,7 +176,7 @@ void MagixPlayer::updateMovement(const FrameEvent &evt, const Quaternion &camOri
 void MagixPlayer::updateAutoAttack(MagixExternalDefinitions *def)
 {
 	if (!mAutoAttackTarget || (up || down || left || right || ascend || descend))return;
-	if (getPosition().squaredDistance(mAutoAttackTarget->getPosition())<(AUTOTARGET_RANGE_SQUARED*0.25 + nextAttackRange*nextAttackRange))
+	if (getPosition().distance(mAutoAttackTarget->getPosition())<= 20)
 	{
 		if (!mNextSkill)doAttack(def);
 		else doSkill(mNextSkill);

@@ -3681,7 +3681,7 @@ bool MagixGUI::selectCurrentObject(SceneNode *object, const unsigned int &flags,
 				}
 				else
 				{
-					mButtonText[BUTTON_SELECTBOX1]->setCaption(tIsAlly ? "" : "Attack");
+					mButtonText[BUTTON_SELECTBOX1]->setCaption("Attack");
 					mButtonText[BUTTON_SELECTBOX2]->setCaption("");
 					mButtonText[BUTTON_SELECTBOX3]->setCaption("");
 					mButtonText[BUTTON_SELECTBOX4]->setCaption("");

@@ -50,6 +50,7 @@ protected:
 	vector<const std::pair<Vector3,Vector3>>::type critterRoamAreaList;
 	unsigned short critterSpawnLimit;
 public:
+	bool isArena;
 	MagixWorld();
 	~MagixWorld();
 	void initialize(SceneManager *sceneMgr, RenderWindow *window, MagixExternalDefinitions *def, MagixGameStateManager *gameStateMgr, MagixSoundManager *soundMgr, MagixCollisionManager *collisionMgr, MagixSkyManager *skyMgr);

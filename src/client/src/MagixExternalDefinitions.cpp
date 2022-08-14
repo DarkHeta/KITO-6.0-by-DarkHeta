@@ -7,9 +7,9 @@ void MagixExternalDefinitions::initialize()
 	loadItems((ENCRYPTED_ITEMS) ? "Items.dat" : "Items.cfg", ENCRYPTED_ITEMS);
 	loadHotkeys("Hotkeys.cfg");
 	attackList.clear();
-	loadAttacks("ad1.cfg", true);
+	loadAttacks("ad1.dat", false);
 	critterList.clear();
-	loadCritters("cd1.cfg", true);
+	loadCritters("cd1.dat", false);
 	loadUpdateCaption();
 	//if (!XOR7FileGen("cd2.dat", "cd2.cfg", true, true))
 	//	throw(Exception(9, "Corrupted Data File", "cd2.dat, please run the autopatcher."));
