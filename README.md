@@ -14,13 +14,13 @@ http://go.microsoft.com/fwlink/?LinkId=517284
 1. Click the ZIP button
 2. Unzip the package
 3. Open Solution.sln by double clicking it.
- 1. if a dialog appears to select a program, select Visual Studio C++ 2013
+2. if a dialog appears to select a program, select Visual Studio C++ 2013
 4. Find GameConfig.h in the files overview
- 1. If you cant find it, then open it in the Config folder of the kito folder.
-5. Modify it to your needs
-6. Compile the entire solution in toolbar: Build -> Build Solution
-7. Once the entire solution has been compiled then nagivate to the build folder and find client and server
-8. Modify the game with your media
+5. If you cant find it, then open it in the Config folder of the kito folder.
+6. Modify it to your needs
+7. Compile the entire solution in toolbar: Build -> Build Solution
+8. Once the entire solution has been compiled then nagivate to the build folder and find client and server
+9. Modify the game with your media
 
 ### DarkHeta's changes
 1. Added Russian language support
