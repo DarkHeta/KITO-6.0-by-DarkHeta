@@ -33,5 +33,6 @@ http://go.microsoft.com/fwlink/?LinkId=517284
 
 ### How to make map PVP zone?
 Just add to .world file this:
+![image](https://user-images.githubusercontent.com/7428298/184548551-402f33c2-58b5-4b35-9a95-f9b94224479c.png)
 
 More up coming!
