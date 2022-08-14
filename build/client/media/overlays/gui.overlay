@@ -6,7 +6,7 @@ template container BorderPanel(GUITemplate/BasicBorderPanel)
     height 1
 
     material GUIMat/StatsBlockCenter
-    border_size 0.005 0.005 0.006665 0.006665
+    border_size 0.0015 0.0015 0.003 0.003
     border_material GUIMat/StatsBlockBorder
     border_topleft_uv 0.0000 1.0000 0.1914 0.7969
     border_top_uv 0.1914 1.0000 0.8086 0.7969
@@ -451,164 +451,218 @@ GUIOverlay/Options
 	}
 	container BorderPanel(GUI/Settings) : GUITemplate/BasicBorderPanel
 	{
-		left 0.225
-		top 0.075
-		width 0.55
-		height 0.675
+		left 0
+		top 0
+		width 0.4
+		height 1
 
 		element TextArea(GUI/SettingsText1) : GUITemplate/BasicText
 		{
-			left 0.225
+			left 0.115
    			top 0.05
 			alignment right
 			caption Music
+			char_height 0.03
 		}
 		element TextArea(GUI/SettingsText2) : GUITemplate/BasicText
 		{
-			left 0.225
-   			top 0.125
+			left 0.115
+   			top 0.1
 			alignment right
 			caption GUI Sound
+			char_height 0.03
 		}
 		element TextArea(GUI/SettingsText3) : GUITemplate/BasicText
 		{
-			left 0.225
-   			top 0.2
+			left 0.115
+   			top 0.15
 			alignment right
 			caption Sound
+			char_height 0.03
 		}
 		element TextArea(GUI/SettingsText4) : GUITemplate/BasicText
 		{
-			left 0.225
-   			top 0.275
+			left 0.115
+   			top 0.2
 			alignment right
 			caption Shadows
+			char_height 0.03
 		}
 		element TextArea(GUI/SettingsText5) : GUITemplate/BasicText
 		{
-			left 0.225
-   			top 0.35
+			left 0.115
+   			top 0.25
 			alignment right
 			caption Bloom Effect
+			char_height 0.03
 		}
 		element TextArea(GUI/SettingsText6) : GUITemplate/BasicText
 		{
-			left 0.225
-   			top 0.425
+			left 0.12
+   			top 0.3
 			alignment right
 			caption Paged Geometry
+			char_height 0.03
 		}
 		element TextArea(GUI/SettingsText7) : GUITemplate/BasicText
 		{
-			left 0.225
-   			top 0.5
+			left 0.12
+   			top 0.35
 			alignment right
 			caption View Distance
+			char_height 0.03
+		}
+		element TextArea(GUI/SettingsText8) : GUITemplate/BasicText
+		{
+			left 0.12
+   			top 0.4
+			alignment right
+			caption Reflection Quality
+			char_height 0.03
+		}
+		element TextArea(GUI/SettingsText9) : GUITemplate/BasicText
+		{
+			left 0.12
+   			top 0.45
+			alignment right
+			caption Reflection Water
+			char_height 0.03
 		}
 		container Panel(GUI/SettingsButton1) : GUITemplate/BasicButton
 		{
-			left 0.325
-			top 0.275
-			width 0.1
-			height 0.05
+			left 0.15
+			top 0.2
+			width 0.03
+			height 0.03
 
 			element TextArea(GUI/SettingsButtonText1) : GUITemplate/CenteredText
 			{
 				caption Off
+				char_height 0.02
 			}
-        	}
+        }
 		container Panel(GUI/SettingsButton2) : GUITemplate/BasicButton
 		{
-			left 0.325
-			top 0.35
-			width 0.1
-			height 0.05
+			left 0.15
+			top 0.25
+			width 0.03
+			height 0.03
 
 			element TextArea(GUI/SettingsButtonText2) : GUITemplate/CenteredText
 			{
 				caption Off
+				char_height 0.02
 			}
-        	}
+        }
 		container Panel(GUI/SettingsButton3) : GUITemplate/BasicButton
 		{
-			left 0.325
-			top 0.425
-			width 0.1
-			height 0.05
+			left 0.15
+			top 0.3
+			width 0.03
+			height 0.03
 
 			element TextArea(GUI/SettingsButtonText3) : GUITemplate/CenteredText
 			{
 				caption Off
+				char_height 0.02
 			}
-        	}
+        }
+		container Panel(GUI/SettingsButton4) : GUITemplate/BasicButton
+		{
+			left 0.15
+			top 0.45
+			width 0.03
+			height 0.03
+
+			element TextArea(GUI/SettingsButtonText4) : GUITemplate/CenteredText
+			{
+				caption Off
+				char_height 0.02
+			}
+        }
 		container Panel(GUI/SettingsButtonBack) : GUITemplate/BasicButton
 		{
-			left 0.215
-			top 0.575
-			width 0.12
-			height 0.05
+			left 0.2
+			top 0.8
+			width 0.06
+			height 0.06
 
 			element TextArea(GUI/SettingsButtonBackText) : GUITemplate/CenteredText
 			{
 				caption Back
+				char_height 0.02
 			}
-        	}
+        }
 		element Panel(GUI/SettingsSlider1) : GUITemplate/BasicSlider
 		{
-			left 0.245
+			left 0.13
 			top 0.06
 			width 0.25
-			height 0.025
+			height 0.005
         	}
 		element Panel(GUI/SettingsSliderMarker1) : GUITemplate/BasicButton
 		{
-			left 0.245
-			top 0.04
-			width 0.025
-			height 0.06
+			left 0.13
+			top 0.05
+			width 0.015
+			height 0.03
         	}
 		element Panel(GUI/SettingsSlider2) : GUITemplate/BasicSlider
 		{
-			left 0.245
-			top 0.135
+			left 0.13
+			top 0.11
 			width 0.25
-			height 0.025
+			height 0.005
         	}
 		element Panel(GUI/SettingsSliderMarker2) : GUITemplate/BasicButton
 		{
-			left 0.245
-			top 0.115
-			width 0.025
-			height 0.06
+			left 0.13
+			top 0.10
+			width 0.015
+			height 0.03
         	}
 		element Panel(GUI/SettingsSlider3) : GUITemplate/BasicSlider
 		{
-			left 0.245
-			top 0.21
+			left 0.13
+			top 0.16
 			width 0.25
-			height 0.025
+			height 0.005
         	}
 		element Panel(GUI/SettingsSliderMarker3) : GUITemplate/BasicButton
 		{
-			left 0.245
-			top 0.19
-			width 0.025
-			height 0.06
+			left 0.13
+			top 0.15
+			width 0.015
+			height 0.03
         	}
 		element Panel(GUI/SettingsSlider4) : GUITemplate/BasicSlider
 		{
-			left 0.245
-			top 0.51
+			left 0.13
+			top 0.36
 			width 0.25
-			height 0.025
+			height 0.005
         	}
 		element Panel(GUI/SettingsSliderMarker4) : GUITemplate/BasicButton
 		{
-			left 0.245
-			top 0.49
-			width 0.025
-			height 0.06
-        	}
+			left 0.13
+			top 0.35
+			width 0.015
+			height 0.03
+        }
+		element Panel(GUI/SettingsSlider5) : GUITemplate/BasicSlider
+		{
+			left 0.13
+			top 0.41
+			width 0.25
+			height 0.005
+        }
+		element Panel(GUI/SettingsSliderMarker5) : GUITemplate/BasicButton
+		{
+			left 0.13
+			top 0.4
+			width 0.015
+			height 0.03
+        }
 	}
 	container BorderPanel(GUI/Interface) : GUITemplate/BasicBorderPanel
 	{

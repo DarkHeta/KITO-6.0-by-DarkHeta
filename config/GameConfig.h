@@ -1,6 +1,7 @@
 #ifndef __GameDefines_h_
 #define __GameDefines_h_
 
+//Water reflection Material
 // 1 to enable
 // 0 to disable
 
@@ -59,7 +60,7 @@
 #define MAP_SPAWN 2500,2500 // x,z spawn location
 
 // OVERALL LIGHTING
-#define AMBIENT_LIGHT_OUTDOOR 0.75, 0.75, 0.75
+#define AMBIENT_LIGHT_OUTDOOR 0.5, 0.5, 0.5
 #define AMBIENT_LIGHT_INDOOR 0.5, 0.5, 0.5
 
 // Uncomment the next line and change the key
@@ -73,5 +74,4 @@
 // Uncomment next lines and change them
 #define MAIN_SERVER_IP "127.0.0.1" // enter your server address
 #define SERVER_PASSWORD "KITO1.7.4" // enter a key
-
 #endif
