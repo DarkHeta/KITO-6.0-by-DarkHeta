@@ -29,5 +29,11 @@ http://go.microsoft.com/fwlink/?LinkId=517284
 4. Changed Unit's behaviour
 5. Added Colour for Mod and Admin tags
 6. Added ability to change font for Admin
+7. Added ability to make world as PVP zones
+
+### How to make map PVP zone?
+Just add to .world file this:
+[Arena]
+true
 
 More up coming!
