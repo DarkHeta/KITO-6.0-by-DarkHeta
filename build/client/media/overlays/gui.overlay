@@ -512,22 +512,6 @@ GUIOverlay/Options
 			caption View Distance
 			char_height 0.03
 		}
-		element TextArea(GUI/SettingsText8) : GUITemplate/BasicText
-		{
-			left 0.12
-   			top 0.4
-			alignment right
-			caption Reflection Quality
-			char_height 0.03
-		}
-		element TextArea(GUI/SettingsText9) : GUITemplate/BasicText
-		{
-			left 0.12
-   			top 0.45
-			alignment right
-			caption Reflection Water
-			char_height 0.03
-		}
 		container Panel(GUI/SettingsButton1) : GUITemplate/BasicButton
 		{
 			left 0.15
@@ -582,7 +566,7 @@ GUIOverlay/Options
         }
 		container Panel(GUI/SettingsButtonBack) : GUITemplate/BasicButton
 		{
-			left 0.2
+			left 0.15
 			top 0.8
 			width 0.06
 			height 0.06
