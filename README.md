@@ -10,7 +10,7 @@ Instructions
 Install Visual Studio 2013 Community Edition
 http://go.microsoft.com/fwlink/?LinkId=517284
 
-### Source instructions
+### Source instructions for newbies:
 1. Click the ZIP button
 2. Unzip the package
 3. Open Solution.sln by double clicking it.
